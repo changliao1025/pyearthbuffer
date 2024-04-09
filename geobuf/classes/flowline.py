@@ -1,11 +1,12 @@
 
-
+import os
 import copy
 import json
 from json import JSONEncoder
 import numpy as np
 from geobuf.classes.vertex import pyvertex
 from geobuf.classes.edge import pyedge
+from osgeo import ogr, gdal, osr
 
 class FlowlineClassEncoder(JSONEncoder):
     def default(self, obj):
@@ -101,6 +102,69 @@ class pyflowline(object):
     def __hash__(self):
         return hash((self.pVertex_start, self.pVertex_end))
     
+    def calculate_buffer_zone_polygon(self, dRadius, sFolder_out=None):
+        """
+        Calculate the buffer zone polygon
+
+        Args:
+            dRadius (float): The buffer zone distance
+
+        Returns:
+            list: A list of buffer zone points
+        """
+        pMultiPolygon = ogr.Geometry(ogr.wkbMultiPolygon)
+        aVertex_out = list()
+        pDriver = ogr.GetDriverByName('GEOJSON')
+        for i in range(self.nEdge):
+            edge = self.aEdge[i]
+            aVertex = edge.calculate_buffer_zone_polygon(dRadius)
+            #create a polygon feature for each edge
+            ring = ogr.Geometry(ogr.wkbLinearRing)
+            for pVertex in aVertex:                
+                ring.AddPoint(pVertex.dLongitude_degree, pVertex.dLatitude_degree)
+            
+            ring.AddPoint(aVertex[0].dLongitude_degree, aVertex[0].dLatitude_degree) #close the ring         
+            # Create a polygon and add the ring to it
+            pPolygon = ogr.Geometry(ogr.wkbPolygon)
+            pPolygon.AddGeometry(ring)
+            # Add the polygon to the MultiPolygon
+            pMultiPolygon.AddGeometry(pPolygon)
+            #save out for debug
+            if sFolder_out is not None:
+                sFilename_out = os.path.join(sFolder_out, 'buffer_zone_edge_%d.geojson' % i)
+                if os.path.exists(sFilename_out):
+                    os.remove(sFilename_out)
+                
+                pDS = pDriver.CreateDataSource(sFilename_out)
+                pLayer = pDS.CreateLayer('buffer_zone', geom_type=ogr.wkbPolygon)
+                pArea_field = ogr.FieldDefn('area', ogr.OFTReal)
+                pArea_field.SetWidth(20)
+                pArea_field.SetPrecision(2)
+                pLayer.CreateField(pArea_field)
+                pLayerDefn = pLayer.GetLayerDefn()
+                pFeature = ogr.Feature(pLayerDefn)                 
+                pFeature.SetGeometry(pPolygon)
+                dArea = pPolygon.GetArea()
+                pFeature.SetField("area", dArea )
+                pLayer.CreateFeature(pFeature)
+                #close the file
+                pDS = None
+                pLayer = None
+                pFeature = None
+
+
+        print(pMultiPolygon.ExportToWkt())
+        pUnionPolygon = pMultiPolygon.UnionCascaded()
+        for i in range(pUnionPolygon.GetGeometryRef(0).GetPointCount()):
+            lon, lat, _ = pUnionPolygon.GetGeometryRef(0).GetPoint(i)          
+            point2= dict()
+            point2['dLongitude_degree'] = lon
+            point2['dLatitude_degree'] =  lat
+            pVertex2 = pyvertex(point2) 
+            aVertex_out.append(pVertex2)            
+            
+        return aVertex_out
+
     def calculate_length(self):
         """
         Calcualte the length

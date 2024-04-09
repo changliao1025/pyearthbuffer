@@ -3,6 +3,7 @@ import json
 from json import JSONEncoder
 import importlib.util
 import numpy as np
+from geographiclib.geodesic import Geodesic
 
 iFlag_cython = importlib.util.find_spec("cython") 
 if iFlag_cython is not None:
@@ -179,6 +180,34 @@ class pyvertex(object):
         dDistance = calculate_distance_based_on_longitude_latitude(lon1, lat1, lon2, lat2)        
         return dDistance
     
+    def calculate_buffer_zone_vertex(self, dRadius, dBearing=90):
+        # Create a geodesic object
+        geod = Geodesic.WGS84 #the default is WGS84
+        # Calculate the geodesic buffer
+        pVertex_buffer = geod.Direct(self.dLatitude_degree, self.dLongitude_degree, dBearing, dRadius)
+        # Extract the latitude and longitude of the buffer point
+        #create a vertex object using the buffer point
+        point0= dict()
+        point0['dLongitude_degree'] = pVertex_buffer['lon2']
+        point0['dLatitude_degree'] = pVertex_buffer['lat2']
+        pVertex_out = pyvertex(point0)  
+        return pVertex_out
+
+    def calculate_buffer_zone_circle(self, dRadius, nPoint = 360):
+        # Create a geodesic object
+        geod = Geodesic.WGS84 #the default is WGS84
+        aVertex = []
+        # Calculate the geodesic buffer
+        for i in range(0, 360, 360//nPoint):
+            pVertex_buffer = geod.Direct(self.dLatitude_degree, self.dLongitude_degree, i, dRadius)
+            point0= dict()
+            point0['dLongitude_degree'] = pVertex_buffer['lon2']
+            point0['dLatitude_degree'] = pVertex_buffer['lat2']
+            pVertex_out = pyvertex(point0)  
+            aVertex.append(pVertex_out)
+    
+        return aVertex
+
     def tojson(self):
         """
         Convert a vecter object to a json string
