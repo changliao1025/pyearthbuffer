@@ -6,6 +6,9 @@ import numpy as np
 from osgeo import ogr, gdal, osr
 from geographiclib.geodesic import Geodesic
 from geobuf.classes.vertex import pyvertex
+
+
+from geobuf.formats.save_vertex_as_polygon import save_vertex_as_polygon
 from geobuf.algorithms.split_by_length import split_edge_by_length
 from geobuf.algorithms.find_minimal_enclosing_polygon import find_minimal_enclosing_polygon
 
@@ -81,71 +84,21 @@ class pyedge(object):
         # Calculate the geodesic buffer  
         aLongitude_degree = []
         aLatitude_degree = []
-        ring = ogr.Geometry(ogr.wkbLinearRing)
         aVertex_start = pVertex_start.calculate_buffer_zone_circle(dRadius, nPoint)
-        for i in range(nPoint):
-            pVertex_buffer0 = aVertex_start[i]
+        for pVertex_buffer0 in aVertex_start:
             aLongitude_degree.append(pVertex_buffer0.dLongitude_degree)
             aLatitude_degree.append(pVertex_buffer0.dLatitude_degree)
-            ring.AddPoint(pVertex_buffer0.dLongitude_degree, pVertex_buffer0.dLatitude_degree)
-
-        #add the first point to close the ring
-        ring.AddPoint( aVertex_start[0].dLongitude_degree, aVertex_start[0].dLatitude_degree) 
-        if sFolder_out is not None:
-            sFilename_dummy = os.path.join(sFolder_out, 'buffer_zone_start.geojson')
-            if os.path.exists(sFilename_dummy):
-                os.remove(sFilename_dummy)
-            pDS = pDriver.CreateDataSource(sFilename_dummy)
-            pLayer = pDS.CreateLayer('buffer_zone', geom_type=ogr.wkbPolygon)
-            pArea_field = ogr.FieldDefn('area', ogr.OFTReal)
-            pArea_field.SetWidth(20)
-            pArea_field.SetPrecision(2)
-            pLayer.CreateField(pArea_field)
-            pLayerDefn = pLayer.GetLayerDefn()
-            pFeature = ogr.Feature(pLayerDefn)     
-            pPolygon = ogr.Geometry(ogr.wkbPolygon)        
-            pPolygon.AddGeometry(ring)    
-            pFeature.SetGeometry(pPolygon)
-            dArea = pPolygon.GetArea()
-            pFeature.SetField("area", dArea )
-            pLayer.CreateFeature(pFeature)
-            #close the file
-            pDS = None
-            pLayer = None
-            pFeature = None
-
-        #reset ring
-        ring = None
-        ring = ogr.Geometry(ogr.wkbLinearRing)
+          
         aVertex_end = pVertex_end.calculate_buffer_zone_circle(dRadius, nPoint)
-        for i in range(nPoint):
-            pVertex_buffer1 = aVertex_end[i]
+        for pVertex_buffer1 in aVertex_end:
             aLongitude_degree.append(pVertex_buffer1.dLongitude_degree)
             aLatitude_degree.append(pVertex_buffer1.dLatitude_degree)
-            ring.AddPoint(pVertex_buffer1.dLongitude_degree, pVertex_buffer1.dLatitude_degree)
-        ring.AddPoint( aVertex_end[0].dLongitude_degree, aVertex_end[0].dLatitude_degree) 
+        
         if sFolder_out is not None:
+            sFilename_dummy = os.path.join(sFolder_out, 'buffer_zone_start.geojson')
+            save_vertex_as_polygon(aVertex_start, sFilename_dummy)
             sFilename_dummy = os.path.join(sFolder_out, 'buffer_zone_end.geojson')
-            if os.path.exists(sFilename_dummy):
-                os.remove(sFilename_dummy)
-            pDS = pDriver.CreateDataSource(sFilename_dummy)
-            pLayer = pDS.CreateLayer('buffer_zone', geom_type=ogr.wkbPolygon)
-            pArea_field = ogr.FieldDefn('area', ogr.OFTReal)
-            pArea_field.SetWidth(20)
-            pArea_field.SetPrecision(2)
-            pLayer.CreateField(pArea_field)
-            pLayerDefn = pLayer.GetLayerDefn()
-            pFeature = ogr.Feature(pLayerDefn)     
-            pPolygon = ogr.Geometry(ogr.wkbPolygon)        
-            pPolygon.AddGeometry(ring)    
-            pFeature.SetGeometry(pPolygon)
-            dArea = pPolygon.GetArea()
-            pFeature.SetField("area", dArea )
-            pLayer.CreateFeature(pFeature)
-            #close the file
-            pDS = None
-            pLayer = None
-            pFeature = None
+            save_vertex_as_polygon(aVertex_end, sFilename_dummy)
 
         #combine them using convex function       
 
@@ -157,7 +110,12 @@ class pyedge(object):
             point0['dLongitude_degree'] = p[0]
             point0['dLatitude_degree'] = p[1]
             pVertex_out = pyvertex(point0)  
-            aVertex_out.append(pVertex_out)
+            aVertex_out.append(pVertex_out) 
+
+        if sFilename_out is not None:
+            save_vertex_as_polygon(aVertex_out, sFilename_out)
+
+        
         return aVertex_out
     
     def calculate_edge_bound(self):

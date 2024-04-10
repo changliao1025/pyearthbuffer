@@ -1,9 +1,13 @@
-
+import os
 import json
 from json import JSONEncoder
 import importlib.util
 import numpy as np
 from geographiclib.geodesic import Geodesic
+from osgeo import ogr
+
+from pyearth.gis.geometry.calculate_polygon_area  import calculate_polygon_area
+from geobuf.formats.save_vertex_as_polygon import save_vertex_as_polygon
 
 iFlag_cython = importlib.util.find_spec("cython") 
 if iFlag_cython is not None:
@@ -193,7 +197,7 @@ class pyvertex(object):
         pVertex_out = pyvertex(point0)  
         return pVertex_out
 
-    def calculate_buffer_zone_circle(self, dRadius, nPoint = 360):
+    def calculate_buffer_zone_circle(self, dRadius, nPoint = 360, sFilename_out=None):
         # Create a geodesic object
         geod = Geodesic.WGS84 #the default is WGS84
         aVertex = []
@@ -205,6 +209,10 @@ class pyvertex(object):
             point0['dLatitude_degree'] = pVertex_buffer['lat2']
             pVertex_out = pyvertex(point0)  
             aVertex.append(pVertex_out)
+
+        if sFilename_out is not None:
+            #save as a geojson file
+            save_vertex_as_polygon(aVertex, sFilename_out)
     
         return aVertex
 
