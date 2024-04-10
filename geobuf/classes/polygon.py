@@ -7,9 +7,9 @@ import numpy as np
 from geobuf.classes.vertex import pyvertex
 from geobuf.classes.edge import pyedge
 from osgeo import ogr, gdal, osr
+import alphashape
 
 from geobuf.algorithms.find_minimal_enclosing_polygon import find_minimal_enclosing_polygon
-
 from geobuf.formats.save_vertex_as_polygon import save_vertex_as_polygon
 class PolygonClassEncoder(JSONEncoder):
     def default(self, obj):
@@ -90,7 +90,7 @@ class pypolygon(object):
     def __hash__(self):
         return hash((self.pVertex_start, self.pVertex_end))
     
-    def calculate_buffer_zone_polygon(self, dRadius,sFilename_out = None, sFolder_out=None):
+    def calculate_buffer_zone_polygon(self, dRadius, sFilename_out = None, sFolder_out=None):
         """
         Calculate the buffer zone polygon
 
@@ -100,43 +100,58 @@ class pypolygon(object):
         Returns:
             list: A list of buffer zone points
         """
-        pMultiPolygon = ogr.Geometry(ogr.wkbMultiPolygon)
         aVertex_out = list()
         aLongitude_degree = list()
         aLatitude_degree = list()
+        aVertex_2d = list()
         for i in range(self.nEdge):
             edge = self.aEdge[i]
-            aVertex = edge.calculate_buffer_zone_polygon(dRadius)
-            #create a polygon feature for each edge
-            ring = ogr.Geometry(ogr.wkbLinearRing)
-            for pVertex in aVertex:                
-                ring.AddPoint(pVertex.dLongitude_degree, pVertex.dLatitude_degree)
+            aVertex, aVertex_center, aVertex_circle = edge.calculate_buffer_zone_polygon(dRadius)
+            for pVertex in aVertex:                  
                 aLongitude_degree.append(pVertex.dLongitude_degree)
                 aLatitude_degree.append(pVertex.dLatitude_degree)
+                aVertex_2d.append([pVertex.dLongitude_degree, pVertex.dLatitude_degree])
+
+            for pVertex in aVertex_center:                  
+                aLongitude_degree.append(pVertex.dLongitude_degree)
+                aLatitude_degree.append(pVertex.dLatitude_degree)
+                aVertex_2d.append([pVertex.dLongitude_degree, pVertex.dLatitude_degree])
             
-            ring.AddPoint(aVertex[0].dLongitude_degree, aVertex[0].dLatitude_degree) #close the ring         
-            # Create a polygon and add the ring to it
-            pPolygon = ogr.Geometry(ogr.wkbPolygon)
-            pPolygon.AddGeometry(ring)
-            # Add the polygon to the MultiPolygon
-            pMultiPolygon.AddGeometry(pPolygon)
+            for pVertex in aVertex_circle:
+                aLongitude_degree.append(pVertex.dLongitude_degree)
+                aLatitude_degree.append(pVertex.dLatitude_degree)
+                aVertex_2d.append([pVertex.dLongitude_degree, pVertex.dLatitude_degree])
+            
             #save out for debug
             if sFolder_out is not None:
                 sFilename_dummy= os.path.join(sFolder_out, 'buffer_zone_edge_%d.geojson' % i)
                 save_vertex_as_polygon(aVertex, sFilename_dummy)
 
-        pPolygon_out = find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree)
+        aVertex_2d = np.array(aVertex_2d)
+        pPolygon_out = alphashape.alphashape(aVertex_2d, 2.0)
         #return as a list of vectex is more friendly
         aVertex_out = list()
-        for p in pPolygon_out:
+        for dLongtitude, dLatitude in pPolygon_out.exterior.coords:
             point0= dict()
-            point0['dLongitude_degree'] = p[0]
-            point0['dLatitude_degree'] = p[1]
+            point0['dLongitude_degree'] = dLongtitude
+            point0['dLatitude_degree'] = dLatitude
             pVertex_out = pyvertex(point0)  
             aVertex_out.append(pVertex_out) 
         if sFilename_out is not None:
-            save_vertex_as_polygon(aVertex_out, sFilename_out)         
-            
+            save_vertex_as_polygon(aVertex_out, sFilename_out)   
+
+        pPolygon_out = alphashape.alphashape(aVertex_2d, 0.0)
+        aVertex_dummy = list()
+        for dLongtitude, dLatitude in pPolygon_out.exterior.coords:
+            point0= dict()
+            point0['dLongitude_degree'] = dLongtitude
+            point0['dLatitude_degree'] = dLatitude
+            pVertex_out = pyvertex(point0)  
+            aVertex_dummy.append(pVertex_out) 
+        if sFilename_out is not None:
+            sFilename_dummy = sFilename_out.replace('.geojson', '_convex_hull.geojson')
+            save_vertex_as_polygon(aVertex_dummy, sFilename_dummy)   
+
         return aVertex_out
 
     def calculate_length(self):

@@ -12,38 +12,38 @@ from geobuf.algorithms.find_minimal_enclosing_polygon import find_minimal_enclos
 point0= dict()
 # Example point (latitude, longitude)
 
-point_lon = -73.935242
-point_lat = 40.730610
+point_lon = -73.
+point_lat = 40.
 point0['dLongitude_degree'] = point_lon
 point0['dLatitude_degree'] =  point_lat
 pVertex0 = pyvertex(point0)  
 
 
-point_lon = -75.935242
-point_lat = 44.730610
+point_lon = -73
+point_lat = 42
 point1= dict()
 point1['dLongitude_degree'] = point_lon
 point1['dLatitude_degree'] =  point_lat
 pVertex1 = pyvertex(point1) 
 
-point_lon = -71.935242
-point_lat = 47.730610
+point_lon = -71
+point_lat = 42
 point2= dict()
 point2['dLongitude_degree'] = point_lon
 point2['dLatitude_degree'] =  point_lat
 pVertex2 = pyvertex(point2) 
 
 
-point_lon = -71.934242
-point_lat = 47.730610
+point_lon = -72
+point_lat = 41
 point2= dict()
 point2['dLongitude_degree'] = point_lon
 point2['dLatitude_degree'] =  point_lat
 pVertex3 = pyvertex(point2) 
 
 
-point_lon = -72.934242
-point_lat = 47.830610
+point_lon = -72.5
+point_lat = 40
 point2= dict()
 point2['dLongitude_degree'] = point_lon
 point2['dLatitude_degree'] =  point_lat
@@ -59,13 +59,10 @@ aVertex.append(pVertex3)
 aVertex.append(pVertex4)
 nPoint = len(aVertex)
 
-
-
 nVertex = len(aVertex)
 
-    #the first part is a flowline
 aEdge = list()
-for i in range(0, nVertex-2):
+for i in range(0, nVertex-1):
     pEdge = pyedge(aVertex[i], aVertex[i+1])
     aEdge.append(pEdge)
     
@@ -77,11 +74,7 @@ pPolygon = pypolygon(aEdge)
 sFolder_out  = '/qfs/people/liao313/workspace/python/geobuf/data/polygon'
 sFilename_out = os.path.join(sFolder_out,  'polygon_buffer.geojson')
 
-pPolygon.calculate_buffer_zone_polygon(1000, sFilename_out = sFilename_out, sFolder_out=sFolder_out)
+pPolygon.calculate_buffer_zone_polygon(50000, sFilename_out = sFilename_out, sFolder_out=sFolder_out)
     
-
-    
-
-
 
 
