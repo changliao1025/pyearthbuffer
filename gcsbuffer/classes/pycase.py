@@ -1,5 +1,4 @@
 import os
-import stat
 from pathlib import Path
 import json
 from json import JSONEncoder
@@ -10,32 +9,23 @@ import numpy as np
 from osgeo import ogr, osr, gdal
 
 from pyearth.system.define_global_variables import *
-
-from geobuf.classes.timer import pytimer
-from geobuf.classes.vertex import pyvertex
-from geobuf.classes.flowline import pyflowline
-from geobuf.classes.edge import pyedge
-
-
-from pyearth.gis.spatialref.reproject_coodinates import reproject_coordinates
-from pyearth.gis.spatialref.conversion_between_degree_and_meter  import degree_to_meter
-from pyearth.gis.spatialref.conversion_between_degree_and_meter  import meter_to_degree
-from pyearth.gis.gdal.read.raster.gdal_read_geotiff_file import gdal_read_geotiff_file
-from pyearth.gis.gdal.read.vector.gdal_read_geojson_boundary import gdal_read_geojson_boundary
-from pyearth.gis.spatialref.get_utm_spatial_reference import get_utm_spatial_reference
 from pyearth.toolbox.data.geoparquet.convert_geojson_to_geoparquet import convert_geojson_to_geoparquet
 
-iFlag_kml = importlib.util.find_spec("simplekml") 
+from gcsbuffer.classes.timer import pytimer
+from gcsbuffer.classes.vertex import pyvertex
+from gcsbuffer.classes.flowline import pyflowline
+from gcsbuffer.classes.edge import pyedge
 
-iFlag_cython = importlib.util.find_spec("cython") 
+iFlag_kml = importlib.util.find_spec("simplekml")
+iFlag_cython = importlib.util.find_spec("cython")
 if iFlag_cython is not None:
-    from geobuf.external.tinyr.tinyr.tinyr import RTree
+    from tinyr import RTree
     iFlag_use_rtree = 1
 else:
     iFlag_use_rtree =0
     pass
 
-gdal.UseExceptions()   
+gdal.UseExceptions()
 pDate = datetime.datetime.today()
 sDate_default = "{:04d}".format(pDate.year) + "{:02d}".format(pDate.month) + "{:02d}".format(pDate.day)
 
@@ -50,12 +40,12 @@ class CaseClassEncoder(JSONEncoder):
         if isinstance(obj, list):
             pass
         if isinstance(obj, pyvertex):
-            return json.loads(obj.tojson()) 
+            return json.loads(obj.tojson())
         if isinstance(obj, pyedge):
             return obj.lEdgeID
         if isinstance(obj, pyflowline):
             return obj.lFlowlineID
-        
+
 
         return JSONEncoder.default(self, obj)
 
@@ -135,7 +125,7 @@ class flowlinecase(object):
     else:
         pass
 
-    from ._hpc import _geobuf_create_hpc_job
+    from ._hpc import _gcsbuffer_create_hpc_job
 
     def __init__(self, aConfig_in,
                  iFlag_standalone_in= None,
@@ -213,7 +203,7 @@ class flowlinecase(object):
             self.iFlag_intersect = int(aConfig_in['iFlag_intersect'])
         else:
             self.iFlag_intersect=1
-        
+
         if self.iFlag_flowline == 1:
             pass
         else:
@@ -233,7 +223,7 @@ class flowlinecase(object):
             self.iResolution_index = int(aConfig_in['iResolution_index'])
         else:
             self.iResolution_index=10
-        
+
         if 'sDggrid_type' in aConfig_in:
             self.sDggrid_type = aConfig_in['sDggrid_type']
         else:
@@ -246,7 +236,7 @@ class flowlinecase(object):
             iCase_index = int(aConfig_in['iCase_index'])
         else:
             iCase_index = 1
-        
+
         sCase_index = "{:03d}".format( iCase_index )
         self.iCase_index =   iCase_index
 
@@ -258,7 +248,7 @@ class flowlinecase(object):
         else:
             print('Please specify resolution.')
 
-        
+
 
         if 'dThreshold_break_by_distance' in aConfig_in:
             self.dThreshold_break_by_distance = float(aConfig_in['dThreshold_break_by_distance'])
@@ -293,7 +283,7 @@ class flowlinecase(object):
 
         if 'sFilename_dem' in aConfig_in:
             self.sFilename_dem = aConfig_in['sFilename_dem']
-        
+
         if self.iFlag_dggrid == 1:
             if 'sFilename_dggrid' in aConfig_in:
                 self.sFilename_dggrid = aConfig_in['sFilename_dggrid']
@@ -372,7 +362,7 @@ class flowlinecase(object):
                             else:
                                 print('Unsupported mesh type?')
 
-            
+
         #the model can be run as part of hexwatershed or standalone
         if self.iFlag_standalone == 1:
             #in standalone case, will add case information and update output path
@@ -384,76 +374,76 @@ class flowlinecase(object):
 
         Path(sPath).mkdir(parents=True, exist_ok=True)
 
-       
 
 
-     
 
-    def geobuf_analyze(self):
+
+
+    def gcsbuffer_analyze(self):
         """
         Analyze the domain results for every watershed
         """
-       
+
         return
 
-    def geobuf_setup(self):
-        
-        
+    def gcsbuffer_setup(self):
+
+
         return
 
-    def geobuf_change_model_parameter(self, sVariable_in, dValue, iFlag_basin_in = None):
+    def gcsbuffer_change_model_parameter(self, sVariable_in, dValue, iFlag_basin_in = None):
         if iFlag_basin_in is None:
             if hasattr(self, sVariable_in):
-                #get default data type                
+                #get default data type
                 sType_default = type(getattr(self, sVariable_in))
                 #get the data type of the input value
                 sType_input = type(dValue)
-                if sType_default == sType_input:      
-                    setattr(self, sVariable_in, dValue)                    
-                    pass   
+                if sType_default == sType_input:
+                    setattr(self, sVariable_in, dValue)
+                    pass
                 else:
                     print('Incorrect data type for the input value: ' + sVariable_in)
                 return True
             else:
                 print("This model parameter is unknown, please check the full parameter list in the documentation: " + sVariable_in)
                 return False
-            
-            
+
+
 
         else:
             #this mean the variable is in the basin object
             pass
 
-    def geobuf_run(self):
+    def gcsbuffer_run(self):
         """
         Run the flowlinecase simulation
 
         Returns:
             list: A list of cell objects
         """
-        
 
-        return 
 
-    def geobuf_evaluate(self):
+        return
+
+    def gcsbuffer_evaluate(self):
         """
         Evaluate the model performance
         """
-        
+
         return
 
-    def geobuf_export(self):
+    def gcsbuffer_export(self):
         """
         Export the model outputs
         """
-        print('geobuf started export results')
+        print('gcsbuffer started export results')
         ptimer = pytimer()
         ptimer.start()
-        
+
         ptimer.stop()
         return
 
-    
+
 
     def tojson(self):
         """
@@ -470,7 +460,7 @@ class flowlinecase(object):
         for sKey in aSkip:
             obj.pop(sKey, None)
             pass
-        
+
         sJson = json.dumps(obj,\
                                sort_keys=True, \
                                indent = 4, \
@@ -478,14 +468,14 @@ class flowlinecase(object):
                                cls=CaseClassEncoder)
         return sJson
 
-    def geobuf_print(self):
+    def gcsbuffer_print(self):
         """
         Print the flowline case object
         """
         print(self.tojson())
         return
 
-    def geobuf_export_config_to_json(self, sFilename_output_in = None):
+    def gcsbuffer_export_config_to_json(self, sFilename_output_in = None):
         """
         Export the configuration to a json file
 
@@ -493,16 +483,16 @@ class flowlinecase(object):
             sFilename_output_in (str, optional): The json filename. Defaults to None.
         """
 
-        
+
         return
 
-    def geobuf_export_basin_config_to_json(self, sFilename_output_in= None):
+    def gcsbuffer_export_basin_config_to_json(self, sFilename_output_in= None):
         """
         Export the member basin configuration to a json file
 
         Args:
             sFilename_output_in (str, optional): The json filename. Defaults to None.
         """
-        
+
 
         return

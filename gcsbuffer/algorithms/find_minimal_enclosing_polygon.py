@@ -1,9 +1,8 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 
-
 def find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree):
-    
+
     # Convert aLatitude_degree/aLongitude_degree points to Cartesian coordinates
     aVertex_cartesian = list()
     for i in range(len(aLongitude_degree)):
@@ -14,8 +13,8 @@ def find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree):
         x = aLongitude_degree[i]
         y = aLatitude_degree[i]
         aVertex_cartesian.append((x,y))
-    
-    
+
+
     aVertex_cartesian = np.array(aVertex_cartesian)
     # Create a ConvexHull object from the Cartesian coordinates
     hull = ConvexHull(aVertex_cartesian)
@@ -27,8 +26,8 @@ def find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree):
     aVertex_on_hull_latlon = []
     for p in aVertex_on_hull_cartesian:
         #dLongitude_degree = np.rad2deg(np.arctan2(p[1], p[0]))
-        #dLatitude_degree = np.rad2deg(np.arcsin(p[2]))     
-        dLongitude_degree = p[0]   
+        #dLatitude_degree = np.rad2deg(np.arcsin(p[2]))
+        dLongitude_degree = p[0]
         dLatitude_degree = p[1]
         aVertex_on_hull_latlon.append((dLongitude_degree, dLatitude_degree))
 

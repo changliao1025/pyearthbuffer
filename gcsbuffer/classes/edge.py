@@ -5,14 +5,13 @@ import importlib.util
 import numpy as np
 from osgeo import ogr, gdal, osr
 from geographiclib.geodesic import Geodesic
-from geobuf.classes.vertex import pyvertex
 
+from gcsbuffer.classes.vertex import pyvertex
+from gcsbuffer.formats.save_vertex_as_polygon import save_vertex_as_polygon
+from gcsbuffer.algorithms.split_by_length import split_edge_by_length
+from gcsbuffer.algorithms.find_minimal_enclosing_polygon import find_minimal_enclosing_polygon
 
-from geobuf.formats.save_vertex_as_polygon import save_vertex_as_polygon
-from geobuf.algorithms.split_by_length import split_edge_by_length
-from geobuf.algorithms.find_minimal_enclosing_polygon import find_minimal_enclosing_polygon
-
-iFlag_cython = importlib.util.find_spec("cython") 
+iFlag_cython = importlib.util.find_spec("cython")
 if iFlag_cython is not None:
     from pyflowline.algorithms.cython.kernel import calculate_angle_betwen_vertex
     from pyflowline.algorithms.cython.kernel import calculate_distance_to_plane
@@ -29,11 +28,11 @@ class EdgeClassEncoder(JSONEncoder):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         if isinstance(obj, list):
-            pass  
+            pass
         if isinstance(obj, pyvertex):
-            return json.loads(obj.tojson()) 
-          
-            
+            return json.loads(obj.tojson())
+
+
         return JSONEncoder.default(self, obj)
 
 class pyedge(object):
@@ -51,7 +50,7 @@ class pyedge(object):
     lEdgeIndex=-1
     pVertex_start = None
     pVertex_end = None
-    dLength=0.0    
+    dLength=0.0
     lIndex_upstream=-1
     lIndex_downstream=-1
     pBound=None
@@ -65,7 +64,7 @@ class pyedge(object):
             pVertex_end_in (pyvertex): The ending vertex
         """
         if pVertex_start_in == pVertex_end_in:
-            print('The two vertices are the same')    
+            print('The two vertices are the same')
         else:
             self.pVertex_start = pVertex_start_in
             self.pVertex_end = pVertex_end_in
@@ -73,7 +72,7 @@ class pyedge(object):
             self.calculate_edge_bound()
 
         return
-    
+
     def calculate_buffer_zone_polygon(self, dRadius, nPoint = 36, sFilename_out=None, sFolder_out=None):
         # Create a geodesic object
 
@@ -81,7 +80,7 @@ class pyedge(object):
             aEdge = [self]
         else:
             aEdge = self.split_by_length(dRadius)
-        
+
         nEdge = len(aEdge)
         aVertex_out = list()
         aVertex_center = list()
@@ -95,8 +94,8 @@ class pyedge(object):
 
             aVertex_center.append(pVertex_start)
             aVertex_center.append(pVertex_end) #might, but should be ok have duplicate
-            # Calculate the geodesic buffer  
-            
+            # Calculate the geodesic buffer
+
             aVertex_start = pVertex_start.calculate_buffer_zone_circle(dRadius, nPoint)
             aVertex_circle.extend(aVertex_start)
             for pVertex_buffer0 in aVertex_start:
@@ -115,28 +114,28 @@ class pyedge(object):
                 sFilename_dummy = os.path.join(sFolder_out, 'buffer_zone_end_%d.geojson'% i)
                 save_vertex_as_polygon(aVertex_end, sFilename_dummy)
 
-        #combine them using convex function       
+        #combine them using convex function
         pPolygon_out = find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree)
         #return as a list of vectex is more friendly
-        
+
         for p in pPolygon_out:
             point0= dict()
             point0['dLongitude_degree'] = p[0]
             point0['dLatitude_degree'] = p[1]
-            pVertex_out = pyvertex(point0)  
-            aVertex_out.append(pVertex_out) 
+            pVertex_out = pyvertex(point0)
+            aVertex_out.append(pVertex_out)
         if sFilename_out is not None:
             save_vertex_as_polygon(aVertex_out, sFilename_out)
-         
+
         return aVertex_out, aVertex_center, aVertex_circle
-    
+
     def calculate_edge_bound(self):
-        
+
         dLon_max = np.max( [self.pVertex_start.dLongitude_degree, self.pVertex_end.dLongitude_degree] )
         dLon_min = np.min( [self.pVertex_start.dLongitude_degree, self.pVertex_end.dLongitude_degree] )
         dLat_max = np.max( [self.pVertex_start.dLatitude_degree, self.pVertex_end.dLatitude_degree] )
         dLat_min = np.min( [self.pVertex_start.dLatitude_degree, self.pVertex_end.dLatitude_degree] )
-        
+
         self.pBound = (dLon_min, dLat_min, dLon_max, dLat_max)
         return self.pBound
 
@@ -173,7 +172,7 @@ class pyedge(object):
             iFlag_shared = 0
 
         return iFlag_shared
-    
+
     def check_upstream(self, other):
         """
         Check whether another edge is the upstream of current edge
@@ -218,7 +217,7 @@ class pyedge(object):
             iFlag_downstream=0
 
         return iFlag_downstream
-    
+
     def split_by_length(self, dLength_in):
         """
         Split an edge using the threshold
@@ -247,7 +246,7 @@ class pyedge(object):
         self.pVertex_start = v1
         self.pVertex_end = v0
         return
-    
+
     def is_overlap(self, pEdge_in):
         """
         Check if two edges overlap each other
@@ -284,15 +283,15 @@ class pyedge(object):
         Returns:
             tuple[int, float, float]: 1 if it is on; 0 if not. Length and distance are calculated if on.
         """
-        iFlag =0 
+        iFlag =0
         dDistance = -1
         dDistance_plane = 9999
         pVertex_start = self.pVertex_start
         pVertex_end = self.pVertex_end
         self.dLength = pVertex_start.calculate_distance(pVertex_end)
         if pVertex_in != pVertex_start and pVertex_in!=pVertex_end:
-            d1 = pVertex_start.calculate_distance(pVertex_in)            
-            d2 = pVertex_end.calculate_distance(pVertex_in)  
+            d1 = pVertex_start.calculate_distance(pVertex_in)
+            d2 = pVertex_end.calculate_distance(pVertex_in)
             d3 = d1 + d2 - self.dLength
             angle3deg = calculate_angle_betwen_vertex(\
                  pVertex_start.dLongitude_degree, pVertex_start.dLatitude_degree,\
@@ -312,12 +311,12 @@ class pyedge(object):
                 dDistance = d1
             else:
                 iFlag = 0
-            
+
         else:
-            iFlag = 0 
+            iFlag = 0
 
         return iFlag, dDistance, dDistance_plane
-    
+
     def __eq__(self, other):
         """
         Check if two edges are equivalent
@@ -352,7 +351,7 @@ class pyedge(object):
         """
 
         obj = self.__dict__.copy()
-        
+
         sJson = json.dumps(obj, \
             sort_keys=True, \
                 indent = 4, \
