@@ -6,7 +6,7 @@ import datetime
 import importlib.util
 from shutil import copy2
 import numpy as np
-from osgeo import ogr, osr, gdal
+from osgeo import gdal
 
 from pyearth.system.define_global_variables import *
 from pyearth.toolbox.data.geoparquet.convert_geojson_to_geoparquet import convert_geojson_to_geoparquet
