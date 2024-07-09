@@ -1,10 +1,5 @@
-import os
-import numpy as np
-from osgeo import ogr, gdal, osr
-from geographiclib.geodesic import Geodesic
 
-from pyearth.gis.geometry.calculate_polygon_area  import calculate_polygon_area
-from geobuf.classes.vertex import pyvertex
+from gcsbuffer.classes.vertex import pyvertex
 
 
 point0= dict()
@@ -23,7 +18,7 @@ point_lat = 40.779
 point0['dLongitude_degree'] = point_lon
 point0['dLatitude_degree'] =  point_lat
 
-pVertex_in = pyvertex(point0)  
+pVertex_in = pyvertex(point0)
 # Buffer radius in meters
 buffer_radius = 10000  # 10 km
 mile_2_meter = 1609.34
@@ -31,7 +26,7 @@ buffer_radius = 10 * mile_2_meter #mile to meter
 
 # Number of points to calculate
 num_points = 60
-sFilename_out = '/qfs/people/liao313/workspace/python/geobuf/data/point/point_buffer.geojson'
+sFilename_out = '/qfs/people/liao313/workspace/python/gcsbuffer/data/point/point_buffer.geojson'
 pVertex_buffer = pVertex_in.calculate_buffer_zone_circle(buffer_radius, sFilename_out = sFilename_out )
-   
+
 
