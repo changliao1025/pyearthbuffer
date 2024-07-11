@@ -101,6 +101,9 @@ class pypolygon(object):
         Returns:
             list: A list of buffer zone points
         """
+        if sFilename_out is not None:
+            os.remove(sFilename_out)
+            
         aVertex_out = list()
         aLongitude_degree = list()
         aLatitude_degree = list()

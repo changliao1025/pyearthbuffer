@@ -1,4 +1,7 @@
+import os, sys
 import numpy as np
+sPath_ncc = '/global/homes/l/liao313/workspace/python/gcsbuffer/'
+sys.path.append(sPath_ncc)
 
 def split_flowline_by_length(aFlowline_in, dDistance):
 
@@ -7,14 +10,14 @@ def split_flowline_by_length(aFlowline_in, dDistance):
     for i in range(nFlowline):
         pFlowline = aFlowline_in[i]
         pFlowline_out = pFlowline.split_by_length(dDistance)
-            
-        aFlowline_out.append(pFlowline_out)    
-          
+
+        aFlowline_out.append(pFlowline_out)
+
 
     return aFlowline_out
 
 def split_edge_by_length(pEdge_in, dLength_in):
-    from pyflowline.classes.edge import pyedge
+    from gcsbuffer.classes.edge import pyedge
     aEdge_out=list()
 
     dLength_total = pEdge_in.dLength
@@ -24,7 +27,7 @@ def split_edge_by_length(pEdge_in, dLength_in):
     else:
         pVertex_start = pEdge_in.pVertex_start
         pVertex_end = pEdge_in.pVertex_end
-        
+
 
         n1 = pVertex_start.toNvector()
         n2 = pVertex_end.toNvector()

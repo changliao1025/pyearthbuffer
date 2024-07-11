@@ -12,6 +12,7 @@ from gcsbuffer.algorithms.split_by_length import split_edge_by_length
 from gcsbuffer.algorithms.find_minimal_enclosing_polygon import find_minimal_enclosing_polygon
 
 iFlag_cython = importlib.util.find_spec("cython")
+iFlag_cython = None
 if iFlag_cython is not None:
     from pyflowline.algorithms.cython.kernel import calculate_angle_betwen_vertex
     from pyflowline.algorithms.cython.kernel import calculate_distance_to_plane
