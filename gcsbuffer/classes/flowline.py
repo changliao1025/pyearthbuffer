@@ -116,9 +116,12 @@ class pyflowline(object):
         """
         pMultiPolygon = ogr.Geometry(ogr.wkbMultiPolygon)
         aVertex_out = list()
+        aCircle_out = list()
         for i in range(self.nEdge):
             edge = self.aEdge[i]
-            aVertex, aVertex_center, aVertex_circle = edge.calculate_buffer_zone_polygon(dRadius)
+            aVertex, aVertex_center, aVertex_circle, aCircle = edge.calculate_buffer_zone_polygon(dRadius)
+
+            aCircle_out.append(aCircle)
             #create a polygon feature for each edge
             ring = ogr.Geometry(ogr.wkbLinearRing)
             for pVertex in aVertex:
@@ -147,7 +150,7 @@ class pyflowline(object):
         if sFilename_out is not None:
             save_vertex_as_polygon(aVertex_out, sFilename_out)
 
-        return aVertex_out
+        return aVertex_out, aCircle_out
 
     def calculate_length(self):
         """

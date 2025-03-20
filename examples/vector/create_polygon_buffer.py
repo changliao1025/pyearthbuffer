@@ -71,7 +71,7 @@ aEdge.append(pEdge)
 
 pPolygon = pypolygon(aEdge)
 
-sFolder_out  = '/qfs/people/liao313/workspace/python/gcsbuffer/data/polygon'
+sFolder_out  = '/qfs/people/liao313/workspace/python/geobuf/data/polygon'
 sFilename_out = os.path.join(sFolder_out,  'polygon_buffer.geojson')
 
 pPolygon.calculate_buffer_zone_polygon(50000, sFilename_out = sFilename_out, sFolder_out=sFolder_out)

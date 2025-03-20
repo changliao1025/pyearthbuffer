@@ -42,6 +42,6 @@ pFlowline = pyflowline(aEdge)
 sFolder_out = '/qfs/people/liao313/workspace/python/gcsbuffer/data/flowline'
 sFilename_out = '/qfs/people/liao313/workspace/python/gcsbuffer/data/flowline/flowline_buffer.geojson'
 
-aVertex = pFlowline.calculate_buffer_zone_polygon(1000, sFilename_out=sFilename_out , sFolder_out=sFolder_out)
+aVertex, aCircle = pFlowline.calculate_buffer_zone_polygon(1000, sFilename_out=sFilename_out , sFolder_out=sFolder_out)
 
 

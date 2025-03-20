@@ -7,6 +7,7 @@ from osgeo import ogr, gdal, osr
 from geographiclib.geodesic import Geodesic
 
 from gcsbuffer.classes.vertex import pyvertex
+from gcsbuffer.classes.circle import pycircle
 from gcsbuffer.formats.save_vertex_as_polygon import save_vertex_as_polygon
 from gcsbuffer.algorithms.split_by_length import split_edge_by_length
 from gcsbuffer.algorithms.find_minimal_enclosing_polygon import find_minimal_enclosing_polygon
@@ -56,6 +57,9 @@ class pyedge(object):
     lIndex_downstream=-1
     pBound=None
 
+    pCircle_start=None
+    pCircle_end=None
+
     def __init__(self, pVertex_start_in, pVertex_end_in):
         """
         Initilize a pyedge object
@@ -66,6 +70,7 @@ class pyedge(object):
         """
         if pVertex_start_in == pVertex_end_in:
             print('The two vertices are the same')
+            self = None
         else:
             self.pVertex_start = pVertex_start_in
             self.pVertex_end = pVertex_end_in
@@ -88,6 +93,7 @@ class pyedge(object):
         aVertex_circle = list()
         aLongitude_degree = []
         aLatitude_degree = []
+        aCircle = list()
         for i in range(nEdge):
             pEdge = aEdge[i]
             pVertex_start = pEdge.pVertex_start
@@ -98,12 +104,15 @@ class pyedge(object):
             # Calculate the geodesic buffer
 
             aVertex_start = pVertex_start.calculate_buffer_zone_circle(dRadius, nPoint)
+            #create a circle object
+            pEdge.pCircle_start = pycircle(pVertex_start, aVertex_start)
             aVertex_circle.extend(aVertex_start)
             for pVertex_buffer0 in aVertex_start:
                 aLongitude_degree.append(pVertex_buffer0.dLongitude_degree)
                 aLatitude_degree.append(pVertex_buffer0.dLatitude_degree)
 
             aVertex_end = pVertex_end.calculate_buffer_zone_circle(dRadius, nPoint)
+            pEdge.pCircle_end = pycircle(pVertex_end, aVertex_end)
             aVertex_circle.extend(aVertex_end)
             for pVertex_buffer1 in aVertex_end:
                 aLongitude_degree.append(pVertex_buffer1.dLongitude_degree)
@@ -114,6 +123,9 @@ class pyedge(object):
                 save_vertex_as_polygon(aVertex_start, sFilename_dummy)
                 sFilename_dummy = os.path.join(sFolder_out, 'buffer_zone_end_%d.geojson'% i)
                 save_vertex_as_polygon(aVertex_end, sFilename_dummy)
+
+            aCircle.append(pEdge.pCircle_start)
+            aCircle.append(pEdge.pCircle_end)
 
         #combine them using convex function
         pPolygon_out = find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree)
@@ -128,7 +140,7 @@ class pyedge(object):
         if sFilename_out is not None:
             save_vertex_as_polygon(aVertex_out, sFilename_out)
 
-        return aVertex_out, aVertex_center, aVertex_circle
+        return aVertex_out, aVertex_center, aVertex_circle, aCircle
 
     def calculate_edge_bound(self):
 
@@ -230,7 +242,7 @@ class pyedge(object):
             list [pyedge]: A list of edge objects, length of 1 if it meets the requirement
         """
         aEdge_out=list()
-        if self.dLength <=aEdge_out:
+        if self.dLength <=dLength_in:
             aEdge_out.append(self)
         else:
             #find location from up to down
