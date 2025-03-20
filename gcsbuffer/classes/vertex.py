@@ -10,6 +10,7 @@ from pyearth.gis.geometry.calculate_polygon_area  import calculate_polygon_area
 from gcsbuffer.formats.save_vertex_as_polygon import save_vertex_as_polygon
 
 iFlag_cython = importlib.util.find_spec("cython")
+iFlag_cython = None
 if iFlag_cython is not None:
     from pyflowline.algorithms.cython.kernel import calculate_distance_based_on_longitude_latitude
 else:
