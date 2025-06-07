@@ -13,7 +13,7 @@ from pyearth.toolbox.data.geoparquet.convert_geojson_to_geoparquet import conver
 
 from gcsbuffer.classes.timer import pytimer
 from gcsbuffer.classes.vertex import pyvertex
-from gcsbuffer.classes.flowline import pyflowline
+from gcsbuffer.classes.polyline import pyflowline
 from gcsbuffer.classes.edge import pyedge
 
 iFlag_kml = importlib.util.find_spec("simplekml")

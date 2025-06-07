@@ -5,7 +5,7 @@ import importlib.util
 import numpy as np
 from osgeo import ogr, gdal, osr
 from geographiclib.geodesic import Geodesic
-
+from pyearth.gis.location.get_geometry_coordinates import get_geometry_coordinates
 from gcsbuffer.classes.vertex import pyvertex
 from gcsbuffer.classes.circle import pycircle
 from gcsbuffer.formats.save_vertex_as_polygon import save_vertex_as_polygon
@@ -79,68 +79,45 @@ class pyedge(object):
 
         return
 
-    def calculate_buffer_zone_polygon(self, dRadius, nPoint = 36, sFilename_out=None, sFolder_out=None):
+    def calculate_buffer_zone(self, dRadius, nPoint = 36, sFilename_out=None, sFolder_out=None):
         # Create a geodesic object
-
         if self.dLength < dRadius * 2.0:
             aEdge = [self]
         else:
             aEdge = self.split_by_length(dRadius)
 
         nEdge = len(aEdge)
-        aVertex_out = list()
-        aVertex_center = list()
-        aVertex_circle = list()
         aLongitude_degree = []
         aLatitude_degree = []
-        aCircle = list()
         for i in range(nEdge):
             pEdge = aEdge[i]
             pVertex_start = pEdge.pVertex_start
             pVertex_end = pEdge.pVertex_end
+            sWkt_start = pVertex_start.calculate_buffer_zone(dRadius, nPoint)
+            #create a polygon object from the wkt
+            pPolygon_start = ogr.CreateGeometryFromWkt(sWkt_start)
+            #get the coordinates of each vertex in the polygon
+            aCoords_gcs_start = get_geometry_coordinates(pPolygon_start)
+            nPoints = len(aCoords_gcs_start)
+            for i in range(nPoints):
+                aLongitude_degree.append(aCoords_gcs_start[i][0])
+                aLatitude_degree.append(aCoords_gcs_start[i][1])
 
-            aVertex_center.append(pVertex_start)
-            aVertex_center.append(pVertex_end) #might, but should be ok have duplicate
-            # Calculate the geodesic buffer
-
-            aVertex_start = pVertex_start.calculate_buffer_zone_circle(dRadius, nPoint)
-            #create a circle object
-            pEdge.pCircle_start = pycircle(pVertex_start, aVertex_start)
-            aVertex_circle.extend(aVertex_start)
-            for pVertex_buffer0 in aVertex_start:
-                aLongitude_degree.append(pVertex_buffer0.dLongitude_degree)
-                aLatitude_degree.append(pVertex_buffer0.dLatitude_degree)
-
-            aVertex_end = pVertex_end.calculate_buffer_zone_circle(dRadius, nPoint)
-            pEdge.pCircle_end = pycircle(pVertex_end, aVertex_end)
-            aVertex_circle.extend(aVertex_end)
-            for pVertex_buffer1 in aVertex_end:
-                aLongitude_degree.append(pVertex_buffer1.dLongitude_degree)
-                aLatitude_degree.append(pVertex_buffer1.dLatitude_degree)
-
-            if sFolder_out is not None:
-                sFilename_dummy = os.path.join(sFolder_out, 'buffer_zone_start_%d.geojson' % i)
-                save_vertex_as_polygon(aVertex_start, sFilename_dummy)
-                sFilename_dummy = os.path.join(sFolder_out, 'buffer_zone_end_%d.geojson'% i)
-                save_vertex_as_polygon(aVertex_end, sFilename_dummy)
-
-            aCircle.append(pEdge.pCircle_start)
-            aCircle.append(pEdge.pCircle_end)
+            sWkt_end = pVertex_end.calculate_buffer_zone(dRadius, nPoint)
+            pPolygon_end = ogr.CreateGeometryFromWkt(sWkt_end)
+            aCoords_gcs_end = get_geometry_coordinates(pPolygon_end)
+            nPoints = len(aCoords_gcs_end)
+            for i in range(nPoints):
+                aLongitude_degree.append(aCoords_gcs_start[i][0])
+                aLatitude_degree.append(aCoords_gcs_start[i][1])
 
         #combine them using convex function
-        pPolygon_out = find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree)
-        #return as a list of vectex is more friendly
-
-        for p in pPolygon_out:
-            point0= dict()
-            point0['dLongitude_degree'] = p[0]
-            point0['dLatitude_degree'] = p[1]
-            pVertex_out = pyvertex(point0)
-            aVertex_out.append(pVertex_out)
+        pPolygon_out, sWkt = find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree)
         if sFilename_out is not None:
-            save_vertex_as_polygon(aVertex_out, sFilename_out)
+            #save_vertex_as_polygon(aVertex_out, sFilename_out)
+            pass
 
-        return aVertex_out, aVertex_center, aVertex_circle, aCircle
+        return sWkt
 
     def calculate_edge_bound(self):
 

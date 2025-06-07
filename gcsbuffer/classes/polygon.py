@@ -5,11 +5,11 @@ import json
 from json import JSONEncoder
 import numpy as np
 from osgeo import ogr, gdal, osr
-import geopandas
-import alphashape
+
+
 
 from pyearth.gis.spatialref.get_utm_spatial_reference import get_utm_spatial_reference_wkt
-from pyearth.gis.spatialref.conversion_between_degree_and_meter import meter_to_degree
+from pyearth.gis.spatialref.convert_between_degree_and_meter import meter_to_degree
 
 from gcsbuffer.classes.vertex import pyvertex
 from gcsbuffer.classes.edge import pyedge
@@ -95,7 +95,7 @@ class pypolygon(object):
     def __hash__(self):
         return hash((self.pVertex_start, self.pVertex_end))
 
-    def calculate_buffer_zone_polygon(self, dRadius, sFilename_out = None, sFolder_out=None,
+    def calculate_buffer_zone(self, dRadius, sFilename_out = None, sFolder_out=None,
                                       iFlag_algorithm=1):
         """
         Calculate the buffer zone polygon
@@ -110,6 +110,7 @@ class pypolygon(object):
             if os.path.exists(sFilename_out):
                 os.remove(sFilename_out)
                 pass
+
         aVertex_out = list()
         aCircle_out = list()
         aLongitude_degree = list()
@@ -119,7 +120,7 @@ class pypolygon(object):
         spatial_ref.ImportFromEPSG(4326)  # Example: WGS84
         for i in range(self.nEdge):
             edge = self.aEdge[i]
-            aVertex, aVertex_center, aVertex_circle, aCircle = edge.calculate_buffer_zone_polygon(dRadius)
+            sWkt = edge.calculate_buffer_zone(dRadius)
             aCircle_out.append(aCircle)
             for pVertex in aVertex:
                 aLongitude_degree.append(pVertex.dLongitude_degree)
@@ -145,6 +146,10 @@ class pypolygon(object):
             #create a polygon geometry
             pGeometry_merge = ogr.Geometry(ogr.wkbPolygon)
             pGeometry_merge.AssignSpatialReference(spatial_ref)
+
+
+            # Collect all geometries first
+            all_geometries = []
             for pCircle in aCircle_out:
                 for ppCircle in pCircle:
                     pGeometry = ogr.Geometry(ogr.wkbPolygon)
@@ -152,10 +157,24 @@ class pypolygon(object):
                     pRing = ogr.Geometry(ogr.wkbLinearRing)
                     for pVertex in ppCircle.aVertex_circle:
                         pRing.AddPoint(pVertex.dLongitude_degree, pVertex.dLatitude_degree)
-                        pass
                     pRing.CloseRings()
                     pGeometry.AddGeometry(pRing)
-                    pGeometry_merge = pGeometry_merge.Union(pGeometry)
+                    all_geometries.append(pGeometry)
+
+            # Option 1: Create a multipolygon and use UnionCascaded
+            if len(all_geometries) > 0:
+                multi_poly = ogr.Geometry(ogr.wkbMultiPolygon)
+                for geom in all_geometries:
+                    multi_poly.AddGeometry(geom)
+                # Use UnionCascaded if available (faster)
+                try:
+                    pGeometry_merge = multi_poly.UnionCascaded()
+                except AttributeError:
+                    # Fall back to sequential union if UnionCascaded is not available
+                    pGeometry_merge = all_geometries[0]
+                    for i in range(1, len(all_geometries)):
+                        pGeometry_merge = pGeometry_merge.Union(all_geometries[i])
+
             #now export the polygon
             aVertex_dummy = list()
             ring = pGeometry_merge.GetGeometryRef(0)  # Get the exterior ring
@@ -179,6 +198,8 @@ class pypolygon(object):
 
     def calculate_buffer_zone_polygon_alpha(self, dRadius, sFilename_out = None, sFolder_out=None,
                                       iFlag_algorithm=1):
+        import geopandas
+        import alphashape
         """
         Calculate the buffer zone polygon
 
@@ -228,7 +249,7 @@ class pypolygon(object):
             aVertex_2d = np.array(aVertex_2d)
             dLatitude_mean = np.mean(aVertex_2d[:,1])
             #convert distance to degree
-            dDegree = meter_to_degree(dLatitude_mean, dRadius)
+            dDegree = meter_to_degree(dRadius, dLatitude_mean )
             pPolygon_out = alphashape.alphashape(aVertex_2d, dDegree)
             #return as a list of vectex is more friendly
             aVertex_out = list()
@@ -270,6 +291,8 @@ class pypolygon(object):
         Returns:
             list: A list of buffer zone points
         """
+        import geopandas
+        import alphashape
         if sFilename_out is not None:
             if os.path.exists(sFilename_out):
                 os.remove(sFilename_out)
@@ -304,12 +327,13 @@ class pypolygon(object):
                 save_vertex_as_polygon(aVertex, sFilename_dummy)
 
         if iFlag_algorithm == 1:
+
             aVertex_2d = np.array(aVertex_2d)
             #mean longitude and latitude
             #dLongitude_mean = np.mean(aVertex_2d[:,0])
             dLatitude_mean = np.mean(aVertex_2d[:,1])
             #convert distance to degree
-            dDegree = meter_to_degree(dLatitude_mean, dRadius)
+            dDegree = meter_to_degree( dRadius, dLatitude_mean)
             gdf_in = geopandas.GeoDataFrame({'geometry': geopandas.points_from_xy(aVertex_2d[:,0], aVertex_2d[:,1])}, crs="EPSG:4326")
             #Generate the alpha shape
             gdf_out = alphashape.alphashape(gdf_in, dDegree)

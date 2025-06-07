@@ -6,7 +6,7 @@ from geographiclib.geodesic import Geodesic
 from pyearth.gis.geometry.calculate_polygon_area  import calculate_polygon_area
 from gcsbuffer.classes.vertex import pyvertex
 from gcsbuffer.classes.edge import pyedge
-from gcsbuffer.classes.flowline import pyflowline
+from gcsbuffer.classes.polyline import pyflowline
 
 
 point0= dict()

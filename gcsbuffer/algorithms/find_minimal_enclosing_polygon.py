@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.spatial import ConvexHull
+from osgeo import ogr
 
 def find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree):
 
@@ -13,7 +14,6 @@ def find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree):
         x = aLongitude_degree[i]
         y = aLatitude_degree[i]
         aVertex_cartesian.append((x,y))
-
 
     aVertex_cartesian = np.array(aVertex_cartesian)
     # Create a ConvexHull object from the Cartesian coordinates
@@ -31,5 +31,14 @@ def find_minimal_enclosing_polygon(aLongitude_degree, aLatitude_degree):
         dLatitude_degree = p[1]
         aVertex_on_hull_latlon.append((dLongitude_degree, dLatitude_degree))
 
-    return aVertex_on_hull_latlon
+    #convert this list ogr geometry
+    pPolygon = ogr.Geometry(ogr.wkbPolygon)
+    pRing = ogr.Geometry(ogr.wkbLinearRing)
+    for p in aVertex_on_hull_latlon:
+        pRing.AddPoint(p[0], p[1])
+    pRing.CloseRings()
+    pPolygon.AddGeometry(pRing)
+    sWkt = pPolygon.ExportToWkt()
+
+    return aVertex_on_hull_latlon, sWkt
 

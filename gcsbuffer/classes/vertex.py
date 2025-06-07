@@ -198,24 +198,28 @@ class pyvertex(object):
         pVertex_out = pyvertex(point0)
         return pVertex_out
 
-    def calculate_buffer_zone_circle(self, dRadius, nPoint = 360, sFilename_out=None):
+    def calculate_buffer_zone(self, dRadius, nPoint = 360, sFilename_out=None):
         # Create a geodesic object
         geod = Geodesic.WGS84 #the default is WGS84
         aVertex = []
         # Calculate the geodesic buffer
+        #create a geometry object
+        pPolygon = ogr.Geometry(ogr.wkbPolygon)
+        pRing = ogr.Geometry(ogr.wkbLinearRing)
         for i in range(0, 360, 360//nPoint):
             pVertex_buffer = geod.Direct(self.dLatitude_degree, self.dLongitude_degree, i, dRadius)
-            point0= dict()
-            point0['dLongitude_degree'] = pVertex_buffer['lon2']
-            point0['dLatitude_degree'] = pVertex_buffer['lat2']
-            pVertex_out = pyvertex(point0)
-            aVertex.append(pVertex_out)
+            pRing.AddPoint(pVertex_buffer['lon2'], pVertex_buffer['lat2'])
+
+        #close the ring
+        pRing.CloseRings()
+        pPolygon.AddGeometry(pRing)
+        sWkt = pPolygon.ExportToWkt()
 
         if sFilename_out is not None:
-            #save as a geojson file
-            save_vertex_as_polygon(aVertex, sFilename_out)
+            #save as a geojson file using the wkt directly
+            pass
 
-        return aVertex
+        return sWkt
 
     def tojson(self):
         """
