@@ -111,90 +111,61 @@ class pypolygon(object):
                 os.remove(sFilename_out)
                 pass
 
-        aVertex_out = list()
-        aCircle_out = list()
-        aLongitude_degree = list()
-        aLatitude_degree = list()
-        aVertex_2d = list()
         spatial_ref = osr.SpatialReference()
         spatial_ref.ImportFromEPSG(4326)  # Example: WGS84
+        pMultiPolygon = ogr.Geometry(ogr.wkbMultiPolygon)
         for i in range(self.nEdge):
             edge = self.aEdge[i]
             sWkt = edge.calculate_buffer_zone(dRadius)
-            aCircle_out.append(aCircle)
-            for pVertex in aVertex:
-                aLongitude_degree.append(pVertex.dLongitude_degree)
-                aLatitude_degree.append(pVertex.dLatitude_degree)
-                aVertex_2d.append([pVertex.dLongitude_degree, pVertex.dLatitude_degree])
-
-            for pVertex in aVertex_center:
-                aLongitude_degree.append(pVertex.dLongitude_degree)
-                aLatitude_degree.append(pVertex.dLatitude_degree)
-                aVertex_2d.append([pVertex.dLongitude_degree, pVertex.dLatitude_degree])
-
-            for pVertex in aVertex_circle:
-                aLongitude_degree.append(pVertex.dLongitude_degree)
-                aLatitude_degree.append(pVertex.dLatitude_degree)
-                aVertex_2d.append([pVertex.dLongitude_degree, pVertex.dLatitude_degree])
-
+            pPolygon =  ogr.CreateGeometryFromWkt(sWkt)
+            # Add the polygon to the MultiPolygon
+            pMultiPolygon.AddGeometry(pPolygon)
             #save out for debug
             if sFolder_out is not None:
                 sFilename_dummy= os.path.join(sFolder_out, 'buffer_zone_edge_%d.geojson' % i)
-                save_vertex_as_polygon(aVertex, sFilename_dummy)
+                #save_vertex_as_polygon(aVertex, sFilename_dummy)
+                pass
 
-        if iFlag_algorithm == 1:
-            #create a polygon geometry
-            pGeometry_merge = ogr.Geometry(ogr.wkbPolygon)
-            pGeometry_merge.AssignSpatialReference(spatial_ref)
-
-
-            # Collect all geometries first
-            all_geometries = []
-            for pCircle in aCircle_out:
-                for ppCircle in pCircle:
-                    pGeometry = ogr.Geometry(ogr.wkbPolygon)
-                    pGeometry.AssignSpatialReference(spatial_ref)
-                    pRing = ogr.Geometry(ogr.wkbLinearRing)
-                    for pVertex in ppCircle.aVertex_circle:
-                        pRing.AddPoint(pVertex.dLongitude_degree, pVertex.dLatitude_degree)
-                    pRing.CloseRings()
-                    pGeometry.AddGeometry(pRing)
-                    all_geometries.append(pGeometry)
-
-            # Option 1: Create a multipolygon and use UnionCascaded
-            if len(all_geometries) > 0:
-                multi_poly = ogr.Geometry(ogr.wkbMultiPolygon)
-                for geom in all_geometries:
-                    multi_poly.AddGeometry(geom)
-                # Use UnionCascaded if available (faster)
-                try:
-                    pGeometry_merge = multi_poly.UnionCascaded()
-                except AttributeError:
-                    # Fall back to sequential union if UnionCascaded is not available
-                    pGeometry_merge = all_geometries[0]
-                    for i in range(1, len(all_geometries)):
-                        pGeometry_merge = pGeometry_merge.Union(all_geometries[i])
-
-            #now export the polygon
-            aVertex_dummy = list()
-            ring = pGeometry_merge.GetGeometryRef(0)  # Get the exterior ring
-            npoints = ring.GetPointCount()
-            for i in range(npoints):
-                point = ring.GetPoint(i)
-                point0= dict()
-                point0['dLongitude_degree'] = point[0]
-                point0['dLatitude_degree'] = point[1]
-                pVertex_out = pyvertex(point0)
-                aVertex_dummy.append(pVertex_out)
-            if sFilename_out is not None:
-                save_vertex_as_polygon(aVertex_dummy, sFilename_out)
-
+        pGeometry_merge = pMultiPolygon.UnionCascaded()
+        aExterior_ring = []
+        sGeometry_type = pGeometry_merge.GetGeometryName()
+        if sGeometry_type == "POLYGON":
+            # Get the exterior ring of the polygon
+            pExterior_ring = pGeometry_merge.GetGeometryRef(0)  # 0 is the exterior ring
+            aExterior_ring.append(pExterior_ring)
+        elif sGeometry_type == "MULTIPOLYGON": #this is unlikely because the object should only support a single polygon
+            # Loop through each polygon in the multipolygon
+            for i in range(pGeometry_merge.GetGeometryCount()):
+                poly = pGeometry_merge.GetGeometryRef(i)
+                pExterior_ring = poly.GetGeometryRef(0)
+                aExterior_ring.append(pExterior_ring)
         else:
-            #use my own algorithm, which is the circle
+            print("Geometry is not a polygon or multipolygon.")
 
-            pass
+        pGeometry_merge = None
+        #create a single polygon from the exterior rings
+        pGeometry_merge = ogr.Geometry(ogr.wkbPolygon)
+        for exterior_ring in aExterior_ring:
+            # Add the exterior ring to the polygon
+            pGeometry_merge.AddGeometry(exterior_ring)
 
-        return aVertex_out, aCircle_out
+        sWkt = pGeometry_merge.ExportToWkt()
+        #save the polygon to a file
+        if sFilename_out is not None:
+            #use gdal to save the polygon
+            pDriver = ogr.GetDriverByName('GeoJSON')
+            if pDriver is None:
+                raise Exception("GeoJSON driver not available.")
+            pDataSource = pDriver.CreateDataSource(sFilename_out)
+            if pDataSource is None:
+                raise Exception("Could not create GeoJSON file.")
+            pLayer = pDataSource.CreateLayer("buffer_zone", spatial_ref, ogr.wkbMultiPolygon)
+            pFeature = ogr.Feature(pLayer.GetLayerDefn())
+            pFeature.SetGeometry(pGeometry_merge)
+            pLayer.CreateFeature(pFeature)
+            pFeature = None
+            pDataSource = None
+        return sWkt
 
     def calculate_buffer_zone_polygon_alpha(self, dRadius, sFilename_out = None, sFolder_out=None,
                                       iFlag_algorithm=1):
