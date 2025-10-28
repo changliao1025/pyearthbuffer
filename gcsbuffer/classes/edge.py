@@ -79,7 +79,7 @@ class pyedge(object):
 
         return
 
-    def calculate_buffer_zone(self, dRadius, nPoint = 36, sFilename_out=None, sFolder_out=None):
+    def calculate_buffer_zone_polygon(self, dRadius, nPoint = 36, sFilename_out=None, sFolder_out=None):
         # Create a geodesic object
         if self.dLength < dRadius * 2.0:
             aEdge = [self]

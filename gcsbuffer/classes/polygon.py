@@ -95,7 +95,7 @@ class pypolygon(object):
     def __hash__(self):
         return hash((self.pVertex_start, self.pVertex_end))
 
-    def calculate_buffer_zone(self, dRadius, sFilename_out = None, sFolder_out=None,
+    def calculate_buffer_zone_polygon(self, dRadius, sFilename_out = None, sFolder_out=None,
                                       iFlag_algorithm=1):
         """
         Calculate the buffer zone polygon

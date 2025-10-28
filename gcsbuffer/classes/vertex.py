@@ -198,7 +198,7 @@ class pyvertex(object):
         pVertex_out = pyvertex(point0)
         return pVertex_out
 
-    def calculate_buffer_zone(self, dRadius, nPoint = 360, sFilename_out=None):
+    def calculate_buffer_zone_polygon(self, dRadius, nPoint = 360, sFilename_out=None):
         # Create a geodesic object
         geod = Geodesic.WGS84 #the default is WGS84
         aVertex = []
