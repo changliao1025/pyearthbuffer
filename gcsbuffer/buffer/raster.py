@@ -10,9 +10,10 @@ from pyearth.toolbox.data.shapefile.convert_shapefile_to_geojson import convert_
 from pyearth.toolbox.conversion.rasterize_vector import rasterize_vector
 from pyearth.toolbox.management.raster.merge_rasters import merge_rasters
 
-from gcsbuffer.classes.vertex import pyvertex
-from gcsbuffer.classes.edge import pyedge
-from gcsbuffer.classes.polygon import pypolygon
+# Import from pyearth instead of local classes
+from pyearth.toolbox.mesh.point import pypoint
+from pyearth.toolbox.mesh.line import pyline
+from pyearth.toolbox.mesh.polygon import pypolygon
 
 
 
@@ -116,12 +117,12 @@ class gcstiff(object):
                     point0= dict()
                     point0['dLongitude_degree'] = pPoint[0]
                     point0['dLatitude_degree'] =  pPoint[1]
-                    pVertex0 = pyvertex(point0)
+                    pVertex0 = pypoint(point0)  # Changed from pyvertex to pypoint
                     aVertex.append(pVertex0)
 
                 aEdge = list()
                 for k in range(0, nVertex-1):
-                    pEdge = pyedge(aVertex[k], aVertex[k+1])
+                    pEdge = pyline(aVertex[k], aVertex[k+1])  # Changed from pyedge to pyline
                     aEdge.append(pEdge)
 
                 pPolygon = pypolygon(aEdge)
@@ -162,4 +163,3 @@ class gcstiff(object):
 
 
         return
-

@@ -1,6 +1,5 @@
 
-from gcsbuffer.classes.vertex import pyvertex
-
+from gcsbuffer import point
 
 point0= dict()
 
@@ -18,7 +17,7 @@ point_lat = 40.779
 point0['dLongitude_degree'] = point_lon
 point0['dLatitude_degree'] =  point_lat
 
-pVertex_in = pyvertex(point0)
+pVertex_in = point(point0)
 # Buffer radius in meters
 buffer_radius = 10000  # 10 km
 mile_2_meter = 1609.34
@@ -28,5 +27,4 @@ buffer_radius = 10 * mile_2_meter #mile to meter
 num_points = 60
 sFilename_out = '/qfs/people/liao313/workspace/python/gcsbuffer/data/point/point_buffer.geojson'
 pVertex_buffer = pVertex_in.calculate_buffer_zone_circle(buffer_radius, sFilename_out = sFilename_out )
-
 
