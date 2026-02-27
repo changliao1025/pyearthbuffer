@@ -1,12 +1,10 @@
 import os
 import numpy as np
 from osgeo import ogr, gdal, osr
-
 from scipy.ndimage import label, generate_binary_structure
 
 from pyearth.gis.gdal.read.raster.gdal_read_geotiff_file import gdal_read_geotiff_file
 from pyearth.toolbox.conversion.vectorize_raster import vectorize_raster
-from pyearth.toolbox.data.shapefile.convert_shapefile_to_geojson import convert_shapefile_to_geojson
 from pyearth.toolbox.conversion.rasterize_vector import rasterize_vector
 from pyearth.toolbox.management.raster.merge_rasters import merge_rasters
 

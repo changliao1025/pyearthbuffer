@@ -32,8 +32,6 @@ from gcsbuffer.buffer.raster import gcstiff as RasterBuffer
 # Import gcsbuffer utilities
 from gcsbuffer.utils.case import pycase as BufferCase
 
-# Import format handlers
-from gcsbuffer.formats.save_vertex_as_polygon import save_vertex_as_polygon
 
 # Define public API
 __all__ = [
@@ -48,6 +46,4 @@ __all__ = [
     # Buffer classes (gcsbuffer-specific)
     'RasterBuffer',
     'BufferCase',
-    # Formats
-    'save_vertex_as_polygon',
 ]

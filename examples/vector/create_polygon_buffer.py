@@ -1,10 +1,13 @@
 import os
-import numpy as np
-from osgeo import ogr, gdal, osr
-from geographiclib.geodesic import Geodesic
-
-from pyearth.gis.geometry.calculate_polygon_area  import calculate_polygon_area
 from gcsbuffer import point, line, polygon
+
+sFolder_data = os.path.join(os.path.dirname(__file__), '..','..','data')
+#convert to absolute path
+sFolder_data = os.path.abspath(sFolder_data)
+print(sFolder_data)
+
+sFolder_out = os.path.join(sFolder_data, 'polygon')
+os.makedirs(sFolder_out, exist_ok=True)
 
 point0= dict()
 # Example point (latitude, longitude)
@@ -13,22 +16,21 @@ point_lon = -73.
 point_lat = 40.
 point0['dLongitude_degree'] = point_lon
 point0['dLatitude_degree'] =  point_lat
-pVertex0 = point(point0)
-
+pPoint0 = point(point0)
 
 point_lon = -73
 point_lat = 42
 point1= dict()
 point1['dLongitude_degree'] = point_lon
 point1['dLatitude_degree'] =  point_lat
-pVertex1 = point(point1)
+pPoint1 = point(point1)
 
 point_lon = -71
 point_lat = 42
 point2= dict()
 point2['dLongitude_degree'] = point_lon
 point2['dLatitude_degree'] =  point_lat
-pVertex2 = point(point2)
+pPoint2 = point(point2)
 
 
 point_lon = -72
@@ -36,41 +38,40 @@ point_lat = 41
 point2= dict()
 point2['dLongitude_degree'] = point_lon
 point2['dLatitude_degree'] =  point_lat
-pVertex3 = point(point2)
-
+pPoint3 = point(point2)
 
 point_lon = -72.5
 point_lat = 40
 point2= dict()
 point2['dLongitude_degree'] = point_lon
 point2['dLatitude_degree'] =  point_lat
-pVertex4 = point(point2)
+pPoint4 = point(point2)
 
+aPoint = list()
+aPoint.append(pPoint0)
+aPoint.append(pPoint1)
+aPoint.append(pPoint2)
+aPoint.append(pPoint3)
+aPoint.append(pPoint4)
+nPoint = len(aPoint)
 
+nPoint = len(aPoint)
 
-aVertex = list()
-aVertex.append(pVertex0)
-aVertex.append(pVertex1)
-aVertex.append(pVertex2)
-aVertex.append(pVertex3)
-aVertex.append(pVertex4)
-nPoint = len(aVertex)
+aLine = list()
+for i in range(0, nPoint-1):
+    pLine = line(aPoint[i], aPoint[i+1])
+    aLine.append(pLine)
 
-nVertex = len(aVertex)
+pLine = line(aPoint[nPoint-1], aPoint[0])
+aLine.append(pLine)
 
-aEdge = list()
-for i in range(0, nVertex-1):
-    pEdge = line(aVertex[i], aVertex[i+1])
-    aEdge.append(pEdge)
+dLon_center = sum([p.dLongitude_degree for p in aPoint]) / nPoint
+dLat_center = sum([p.dLatitude_degree for p in aPoint]) / nPoint
 
-pEdge = line(aVertex[nVertex-1], aVertex[0])
-aEdge.append(pEdge)
+aPoint.append(aPoint[0])
 
-pPolygon = polygon(aEdge)
+pPolygon = polygon(dLon_center, dLat_center, aLine, aPoint)
 
-sFolder_out  = '/qfs/people/liao313/workspace/python/geobuf/data/polygon'
 sFilename_out = os.path.join(sFolder_out,  'polygon_buffer.geojson')
 
 pPolygon.calculate_buffer_zone_polygon(50000, sFilename_out = sFilename_out, sFolder_out=sFolder_out)
-
-
