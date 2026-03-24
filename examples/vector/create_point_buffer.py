@@ -1,5 +1,5 @@
 import os
-from gcsbuffer import point
+from pyearthbuffer import point
 sFolder_data = os.path.join(os.path.dirname(__file__), '..','..','data')
 #convert to absolute path
 sFolder_data = os.path.abspath(sFolder_data)

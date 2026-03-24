@@ -1,4 +1,4 @@
-### gcsbuffer
+### pyearthbuffer
 
 Create buffer zones based the Geographic Coordinate System (GCS) in Python.
 
@@ -7,7 +7,7 @@ You can also support it by [buying me a coffee](https://www.buymeacoffee.com/cha
 
 ### Dependency
 
-gcsbuffer depends on the following packages
+pyearthbuffer depends on the following packages
 
 1. `numpy`
 2. `gdal`
@@ -17,17 +17,17 @@ gcsbuffer depends on the following packages
 
 ### Documentation
 
-Please refer to the [documentation](https://gcsbuffer.readthedocs.io) for details on how to get started using the gcsbuffer package.
+Please refer to the [documentation](https://pyearthbuffer.readthedocs.io) for details on how to get started using the pyearthbuffer package.
 
 ### Installation
 
-`gcsbuffer` depends on several other packages, including gdal, which cannot be installed through `pip` easily. You are recommended to use `conda` to install dependency if necessary.
+`pyearthbuffer` depends on several other packages, including gdal, which cannot be installed through `pip` easily. You are recommended to use `conda` to install dependency if necessary.
 
-    conda install gcsbuffer
+    conda install pyearthbuffer
 
 ### Content
 
-gcsbuffer mainly provides buffer zone related opertions in Geographic Coordinate System (GCS). The package includes the following functions:
+pyearthbuffer mainly provides buffer zone related opertions in Geographic Coordinate System (GCS). The package includes the following functions:
 1. Vector-based (point, polyline, and polygon) buffer zone calculation
 2. Raster-based (binary) buffer zone calculation
 

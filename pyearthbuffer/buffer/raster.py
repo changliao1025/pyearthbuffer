@@ -6,7 +6,7 @@ from scipy.ndimage import label, generate_binary_structure
 from pyearth.gis.gdal.read.raster.gdal_read_geotiff_file import gdal_read_geotiff_file
 from pyearth.toolbox.conversion.vectorize_raster import vectorize_raster
 from pyearth.toolbox.conversion.rasterize_vector import rasterize_vector
-from pyearth.toolbox.management.raster.merge_rasters import merge_rasters
+from pyearth.toolbox.management.raster.merge_raster_files import merge_raster_files
 
 # Import from pyearth instead of local classes
 from pyearth.toolbox.mesh.point import pypoint
@@ -156,7 +156,7 @@ class gcstiff(object):
         sFilename_merge_out = sFilename_out
 
         sFilename_mask = sFilename_raster
-        merge_rasters(aFilename_raster_out, sFilename_merge_out, dResolution_x, dResolution_y,
+        merge_raster_files(aFilename_raster_out, sFilename_merge_out, dResolution_x, dResolution_y,
                            sFilename_mask)
 
 

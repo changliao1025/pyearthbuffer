@@ -5,11 +5,11 @@ from scipy.ndimage import binary_erosion, binary_dilation
 import numpy as np
 from osgeo import gdal
 
-sPath_ncc = '/global/homes/l/liao313/workspace/python/gcsbuffer/'
+sPath_ncc = '/global/homes/l/liao313/workspace/python/pyearthbuffer/'
 sys.path.append(sPath_ncc)
 
 from pyearth.gis.gdal.read.raster.gdal_read_geotiff_file import gdal_read_geotiff_file
-from gcsbuffer.classes.gcstiff import gcstiff
+from pyearthbuffer.classes.gcstiff import gcstiff
 
 
 # Buffer radius in meters
@@ -25,7 +25,7 @@ sFilename_binary_mask = '/global/cfs/projectdirs/m4611/data/output/waterbody/geo
 #use erosion and dilation to adjust the mask
 
 
-sWorkspace_out = '/global/homes/l/liao313/workspace/python/gcsbuffer/data/raster'
+sWorkspace_out = '/global/homes/l/liao313/workspace/python/pyearthbuffer/data/raster'
 sFilename_out = os.path.join(sWorkspace_out, 'waterbody_merge_binary_adjust.tif')
 
 #make a copy first

@@ -23,7 +23,7 @@ class CaseClassEncoder(JSONEncoder):
 
 class pycase(object):
     """
-    The gcsbuffer case class for managing buffer operations.
+    The pyearthbuffer case class for managing buffer operations.
 
     Args:
         aConfig_in (dict): A dictionary of configuration parameters
@@ -38,7 +38,7 @@ class pycase(object):
 
     def __init__(self, aConfig_in, sDate_in=None, sWorkspace_output_in=None):
         """
-        Initialize a gcsbuffer case object.
+        Initialize a pyearthbuffer case object.
 
         Args:
             aConfig_in (dict): A dictionary of parameters
@@ -70,7 +70,7 @@ class pycase(object):
         if 'sModel' in aConfig_in:
             sModel = aConfig_in['sModel']
         else:
-            sModel = 'gcsbuffer'
+            sModel = 'pyearthbuffer'
 
         sCase = sModel + self.sDate + sCase_index
         self.sCase = sCase
@@ -87,11 +87,11 @@ class pycase(object):
             self.sWorkspace_output = sPath
             Path(sPath).mkdir(parents=True, exist_ok=True)
 
-    def gcsbuffer_export(self):
+    def pyearthbuffer_export(self):
         """
         Export the buffer operation results.
         """
-        print('gcsbuffer started export results')
+        print('pyearthbuffer started export results')
         ptimer = pytimer()
         ptimer.start()
         # Export logic here
@@ -113,7 +113,7 @@ class pycase(object):
                           cls=CaseClassEncoder)
         return sJson
 
-    def gcsbuffer_print(self):
+    def pyearthbuffer_print(self):
         """
         Print the case object.
         """
