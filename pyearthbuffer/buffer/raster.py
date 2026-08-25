@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from osgeo import ogr, gdal, osr
-from scipy.ndimage import label, generate_binary_structure
+
 
 from pyearth.gis.gdal.read.raster.gdal_read_geotiff_file import gdal_read_geotiff_file
 from pyearth.toolbox.conversion.vectorize_raster import vectorize_raster
@@ -32,6 +32,7 @@ class gcstiff(object):
 
 
     def calculate_binary_mash_buffer_zone( self, buffer_radius, sFilename_out):
+        from scipy.ndimage import label, generate_binary_structure
         #read the geotiff file
 
         #get the folder that contain the output file
