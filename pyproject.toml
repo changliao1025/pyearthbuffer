@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Geographic Coordinate System Buffer Operations in Python"
 readme = "README.md"
 authors = [
-    {name = "Chang Liao"}
+    {name = "Chang Liao", email = "changliao.climate@gmail.com"}
 ]
 license = {text = "BSD-3-Clause"}
 classifiers = [
@@ -16,31 +16,55 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: GIS",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
-    "numpy",
-    "gdal",
-    "matplotlib",
     "cartopy",
-    "pyearth",
+    "gdal",
     "geographiclib",
+    "matplotlib",
+    "numpy",
+    "pyearth",
     "scipy",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
     "black",
     "flake8",
+    "isort",
+    "mypy",
+    "pre-commit",
+    "pytest",
 ]
 
 [project.urls]
-Homepage = "https://github.com/changliao/pyearthbuffer"
+Homepage = "https://github.com/changliao1025/pyearthbuffer"
 Documentation = "https://pyearthbuffer.readthedocs.io"
-Repository = "https://github.com/changliao/pyearthbuffer"
+Repository = "https://github.com/changliao1025/pyearthbuffer"
+
+[tool.setuptools.packages.find]
+include = ["pyearthbuffer*"]
+exclude = ["data*", "examples*", "rules*", "tests*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+explicit_package_bases = true
+exclude = ['docs/', 'data/']

@@ -1,7 +1,6 @@
-"""
-Buffer-specific algorithms for geometric operations.
+"""Buffer-specific algorithms for geometric operations.
 
-Note: Most algorithms are now available in pyearth.toolbox.mesh.algorithm
+Note: Most geometric algorithms are provided by pyearth.toolbox.mesh.algorithm.
 """
 
-__all__ = []
+__all__: list[str] = []

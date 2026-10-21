@@ -1,60 +1,55 @@
-### pyearthbuffer
+# pyearthbuffer
 
-Create buffer zones based the Geographic Coordinate System (GCS) in Python.
+Geographic Coordinate System (GCS) Buffer Operations in Python.
 
 If you find this package useful, please cite it in your work.
-You can also support it by [buying me a coffee](https://www.buymeacoffee.com/changliao) or sponsoring it on [GitHub].
+You can also support it by [buying me a coffee](https://www.buymeacoffee.com/changliao) or sponsoring it on [GitHub](https://github.com/sponsors/changliao1025).
 
-### Dependency
+## Dependencies
 
-pyearthbuffer depends on the following packages
+`pyearthbuffer` depends on the following packages:
 
 1. `numpy`
 2. `gdal`
-3. `matplotlib`
-4. `cartopy`
-5. `pyearth`
+3. `scipy`
+4. `geographiclib`
+5. `matplotlib`
+6. `cartopy`
+7. `pyearth`
 
-### Documentation
+## Documentation
 
-Please refer to the [documentation](https://pyearthbuffer.readthedocs.io) for details on how to get started using the pyearthbuffer package.
+Please refer to the [documentation](https://pyearthbuffer.readthedocs.io) for details on how to get started using the `pyearthbuffer` package.
 
-### Installation
+## Installation
 
-`pyearthbuffer` depends on several other packages, including gdal, which cannot be installed through `pip` easily. You are recommended to use `conda` to install dependency if necessary.
+`pyearthbuffer` depends on several geospatial packages including `gdal`, which are most reliably installed through `conda`:
 
-    conda install pyearthbuffer
+```bash
+conda install -c conda-forge pyearthbuffer
+```
 
-### Content
+Or install from source in editable mode:
 
-pyearthbuffer mainly provides buffer zone related opertions in Geographic Coordinate System (GCS). The package includes the following functions:
-1. Vector-based (point, polyline, and polygon) buffer zone calculation
-2. Raster-based (binary) buffer zone calculation
+```bash
+pip install -e .
+```
 
-You can either call these functions through this package, or you can modify them for your own applications.
+## Features
 
-### Acknowledgment
+`pyearthbuffer` provides geodesic buffer operations on the WGS84 ellipsoid:
+
+1. **Vector-based buffer calculations**:
+   - Point buffers (`create_point_buffer_zone` or `pypoint.calculate_buffer_zone`)
+   - Line and Polyline buffers (`create_polyline_buffer_zone` or `pypolyline.calculate_buffer_zone_polygon`)
+   - Polygon buffers (`create_buffer_zone_polygon_file` or `pypolygon.calculate_buffer_zone_polygon`)
+2. **Raster-based buffer calculations**:
+   - Binary mask buffer zone calculation (`RasterBuffer` / `gcstiff.calculate_binary_mask_buffer_zone`)
+
+## Acknowledgment
 
 This research was supported as part of the Next Generation Ecosystem Experiments-Tropics, funded by the U.S. Department of Energy, Office of Science, Office of Biological and Environmental Research at Pacific Northwest National Laboratory. The study was also partly supported by U.S. Department of Energy Office of Science Biological and Environmental Research through the Earth and Environmental System Modeling program as part of the Energy Exascale Earth System Model (E3SM) project.
 
-### License
+## License
 
-Copyright © 2022, Battelle Memorial Institute
-
-1. Battelle Memorial Institute (hereinafter Battelle) hereby grants permission to any person or entity lawfully obtaining a copy of this software and associated documentation files (hereinafter “the Software”) to redistribute and use the Software in source and binary forms, with or without modification. Such person or entity may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software and may permit others to do so, subject to the following conditions:
-
-* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimers.
-
-* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-
-* Other than as used herein, neither the name Battelle Memorial Institute or Battelle may be used in any form whatsoever without the express written consent of Battelle.
-
-2. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BATTELLE OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-
-### References
-
-
-
-
+BSD 3-Clause License. See [LICENSE.md](LICENSE.md) for details.

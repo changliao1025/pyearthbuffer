@@ -1,3 +1,3 @@
-"""
-Format handlers for buffer operations.
-"""
+"""Format handlers for buffer operations."""
+
+__all__: list[str] = []

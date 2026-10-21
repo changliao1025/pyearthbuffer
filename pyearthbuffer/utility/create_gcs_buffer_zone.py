@@ -62,20 +62,17 @@ See Also
 - polygon.calculate_buffer_zone: Polygon buffer implementation
 """
 
-import os
-import sys
 import logging
-import numpy as np
+import os
 from typing import Optional
-from osgeo import ogr, gdal, osr
 
-from pyearth.gis.location.get_geometry_coordinates import get_geometry_coordinates
-from pyearth.gis.geometry.calculate_polygon_area import calculate_polygon_area
+import numpy as np
+from osgeo import ogr
 from pyearth.gis.gdal.gdal_vector_format_support import get_vector_format_from_filename
-from pyearthbuffer import pypoint
-from pyearthbuffer import pyline
-from pyearthbuffer import pypolyline
-from pyearthbuffer import pypolygon
+from pyearth.gis.geometry.calculate_polygon_area import calculate_polygon_area
+from pyearth.gis.location.get_geometry_coordinates import get_geometry_coordinates
+
+from pyearthbuffer import pyline, pypoint, pypolygon, pypolyline
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -330,8 +327,9 @@ def create_point_buffer_zone(sWkt: str, dBuffer_distance_in: float) -> Optional[
 
     if sWkt_buffer_polygon is None:
         logger.warning("Buffer calculation returned None")
+        return None
 
-    return sWkt_buffer_polygon
+    return str(sWkt_buffer_polygon)
 
 
 def create_polyline_buffer_zone(sWkt: str, dBuffer_distance_in: float) -> Optional[str]:
@@ -620,8 +618,9 @@ def create_polyline_buffer_zone(sWkt: str, dBuffer_distance_in: float) -> Option
 
     if sWkt_buffer_polygon is None:
         logger.warning("Buffer calculation returned None")
+        return None
 
-    return sWkt_buffer_polygon
+    return str(sWkt_buffer_polygon)
 
 
 def _dissolve_buffer_geometries(aBuffer_geometries: list) -> Optional[ogr.Geometry]:
@@ -691,7 +690,7 @@ def _split_multipolygon_to_polygons(geometry: ogr.Geometry) -> list:
     list
         List of individual POLYGON geometries
     """
-    polygons = []
+    polygons: list[ogr.Geometry] = []
 
     if geometry is None:
         return polygons
@@ -1009,8 +1008,8 @@ def create_buffer_zone_polygon_file(
     if pDriver_out is None:
         error_msg = f"Driver {output_driver_name} not available!"
         logger.error(error_msg)
-        print(f"Error: {error_msg}")
-        print(f"Hint: Check GDAL installation or try a different output format")
+        print("Error: " + error_msg)
+        print("Hint: Check GDAL installation or try a different output format")
         pDataSource = None
         raise RuntimeError(error_msg)
 
@@ -1019,7 +1018,7 @@ def create_buffer_zone_polygon_file(
         if verbose:
             print(f"Removing existing output file: {sFilename_polygon_out}")
         try:
-            #pDriver_out.DeleteDataSource(sFilename_polygon_out)
+            # pDriver_out.DeleteDataSource(sFilename_polygon_out)
             os.remove(sFilename_polygon_out)
         except Exception as e:
             logger.warning(f"Could not delete existing file: {str(e)}")
@@ -1126,7 +1125,7 @@ def create_buffer_zone_polygon_file(
         elif sGeometry_type == "POLYGON":
             try:
                 aCoords_gcs = get_geometry_coordinates(pGeometry)
-                #QC, make sure longitude range is -180 to 180 and latitude range is -90 to 90
+                # QC, make sure longitude range is -180 to 180 and latitude range is -90 to 90
                 for coord in aCoords_gcs:
                     coord[0] = np.clip(coord[0], -180, 180)
                     coord[1] = np.clip(coord[1], -90, 90)
@@ -1242,11 +1241,15 @@ def create_buffer_zone_polygon_file(
 
                 try:
                     # Create polygon and calculate buffer
-                    dLon_center, dLat_center = np.mean(aCoords_gcs[:, 0]), np.mean(aCoords_gcs[:, 1])
-                    #add the last point which is the same as the first point to close the polygon
+                    dLon_center, dLat_center = np.mean(aCoords_gcs[:, 0]), np.mean(
+                        aCoords_gcs[:, 1]
+                    )
+                    # add the last point which is the same as the first point to close the polygon
                     aPoint_loop = aPoint + [aPoint[0]]
                     pPolygon = pypolygon(dLon_center, dLat_center, aEdge, aPoint_loop)
-                    sWkt_buffer, _ , _ = pPolygon.calculate_buffer_zone_polygon(dBuffer_distance_in)
+                    sWkt_buffer, _, _ = pPolygon.calculate_buffer_zone_polygon(
+                        dBuffer_distance_in
+                    )
 
                     if sWkt_buffer:
                         buffer_geom = ogr.CreateGeometryFromWkt(sWkt_buffer)
@@ -1314,14 +1317,20 @@ def create_buffer_zone_polygon_file(
 
                 if unified_geometry is not None:
                     if verbose:
-                        print(f"Unified geometry type: {unified_geometry.GetGeometryName()}")
+                        print(
+                            f"Unified geometry type: {unified_geometry.GetGeometryName()}"
+                        )
                         print("Splitting MULTIPOLYGON into individual polygons...")
 
                     # Split into individual polygons
-                    individual_polygons = _split_multipolygon_to_polygons(unified_geometry)
+                    individual_polygons = _split_multipolygon_to_polygons(
+                        unified_geometry
+                    )
 
                     if verbose:
-                        print(f"Created {len(individual_polygons)} non-overlapping buffer zones")
+                        print(
+                            f"Created {len(individual_polygons)} non-overlapping buffer zones"
+                        )
                         print("Writing simplified buffers to output...")
 
                     # Write each polygon as a separate feature
@@ -1333,13 +1342,19 @@ def create_buffer_zone_polygon_file(
                                 outFeature.SetGeometry(polygon)
                                 outFeature.SetField("id", feature_id)
                                 # Use sum of original areas for dissolved buffers
-                                outFeature.SetField("orig_area", float(sum(aBuffer_areas)))
-                                outFeature.SetField("buffer_dist", float(dBuffer_distance_in))
+                                outFeature.SetField(
+                                    "orig_area", float(sum(aBuffer_areas))
+                                )
+                                outFeature.SetField(
+                                    "buffer_dist", float(dBuffer_distance_in)
+                                )
                                 pOutLayer.CreateFeature(outFeature)
                                 outFeature = None
                                 feature_id += 1
                             except Exception as e:
-                                logger.warning(f"Failed to write simplified polygon {feature_id}: {str(e)}")
+                                logger.warning(
+                                    f"Failed to write simplified polygon {feature_id}: {str(e)}"
+                                )
 
                     # Update statistics
                     nBuffered = len(individual_polygons)
@@ -1363,9 +1378,9 @@ def create_buffer_zone_polygon_file(
 
     # Report final statistics
     if verbose:
-        print(f'\n{"="*60}')
-        print(f"Processing complete!")
-        print(f'{"="*60}')
+        print(f"\n{'='*60}")
+        print("Processing complete!")
+        print(f"{'='*60}")
         print(f"Total features processed: {nProcessed}")
         print(f"Buffer zones created: {nBuffered}")
         print(f"Skipped (below area threshold): {nSkipped_area}")

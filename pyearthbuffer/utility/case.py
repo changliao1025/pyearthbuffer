@@ -1,121 +1,104 @@
-import os
-from pathlib import Path
-import json
-from json import JSONEncoder
-import datetime
-import numpy as np
+"""Case management for pyearthbuffer operations."""
 
-# Import from pyearth instead of local classes
+import datetime
+import json
+import os
+from json import JSONEncoder
+from pathlib import Path
+from typing import Any, Optional
+
+import numpy as np
 from pyearth.toolbox.date.timer import pytimer
 
+
 class CaseClassEncoder(JSONEncoder):
-    def default(self, obj):
+    """JSON encoder that handles NumPy scalar and array types."""
+
+    def default(self, obj: Any) -> Any:
         if isinstance(obj, np.integer):
             return int(obj)
-        if isinstance(obj, np.float32):
+        if isinstance(obj, (np.floating, float)):
             return float(obj)
         if isinstance(obj, np.ndarray):
             return obj.tolist()
-        if isinstance(obj, list):
-            pass
-        return JSONEncoder.default(self, obj)
+        return super().default(obj)
 
 
-class pycase(object):
-    """
-    The pyearthbuffer case class for managing buffer operations.
+class pycase:
+    """The pyearthbuffer case class for managing buffer operations.
 
     Args:
-        aConfig_in (dict): A dictionary of configuration parameters
-        sDate_in (str, optional): The case date. Defaults to None.
-        sWorkspace_output_in (str, optional): The output workspace. Defaults to None.
+        aConfig_in (Dict[str, Any]): A dictionary of configuration parameters.
+        sDate_in (Optional[str], optional): The case date string. Defaults to None.
+        sWorkspace_output_in (Optional[str], optional): The output workspace path. Defaults to None.
     """
 
-    iCase_index = 0
-    sCase = ''
-    sDate = ''
-    sWorkspace_output = ''
+    iCase_index: int = 0
+    sCase: str = ""
+    sDate: str = ""
+    sWorkspace_output: str = ""
 
-    def __init__(self, aConfig_in, sDate_in=None, sWorkspace_output_in=None):
-        """
-        Initialize a pyearthbuffer case object.
-
-        Args:
-            aConfig_in (dict): A dictionary of parameters
-            sDate_in (str, optional): The case date. Defaults to None.
-            sWorkspace_output_in (str, optional): The output workspace. Defaults to None.
-        """
-
+    def __init__(
+        self,
+        aConfig_in: dict[str, Any],
+        sDate_in: Optional[str] = None,
+        sWorkspace_output_in: Optional[str] = None,
+    ):
         # Set case index
-        if 'iCase_index' in aConfig_in:
-            iCase_index = int(aConfig_in['iCase_index'])
-        else:
-            iCase_index = 1
-
-        sCase_index = "{:03d}".format(iCase_index)
+        iCase_index = int(aConfig_in.get("iCase_index", 1))
         self.iCase_index = iCase_index
+        sCase_index = f"{iCase_index:03d}"
 
         # Set date
         pDate = datetime.datetime.today()
-        sDate_default = "{:04d}".format(pDate.year) + "{:02d}".format(pDate.month) + "{:02d}".format(pDate.day)
+        sDate_default = f"{pDate.year:04d}{pDate.month:02d}{pDate.day:02d}"
 
         if sDate_in is not None:
             self.sDate = sDate_in
-        elif 'sDate' in aConfig_in:
-            self.sDate = aConfig_in['sDate']
+        elif "sDate" in aConfig_in:
+            self.sDate = aConfig_in["sDate"]
         else:
             self.sDate = sDate_default
 
         # Set case name
-        if 'sModel' in aConfig_in:
-            sModel = aConfig_in['sModel']
-        else:
-            sModel = 'pyearthbuffer'
-
-        sCase = sModel + self.sDate + sCase_index
-        self.sCase = sCase
+        sModel = aConfig_in.get("sModel", "pyearthbuffer")
+        self.sCase = f"{sModel}{self.sDate}{sCase_index}"
 
         # Set output workspace
         if sWorkspace_output_in is not None:
             self.sWorkspace_output = sWorkspace_output_in
-        elif 'sWorkspace_output' in aConfig_in:
-            self.sWorkspace_output = aConfig_in['sWorkspace_output']
+        elif "sWorkspace_output" in aConfig_in:
+            self.sWorkspace_output = aConfig_in["sWorkspace_output"]
 
         # Create output directory
         if self.sWorkspace_output:
-            sPath = str(Path(self.sWorkspace_output) / sCase)
+            sPath = str(Path(self.sWorkspace_output) / self.sCase)
             self.sWorkspace_output = sPath
-            Path(sPath).mkdir(parents=True, exist_ok=True)
+            os.makedirs(sPath, exist_ok=True)
 
-    def pyearthbuffer_export(self):
-        """
-        Export the buffer operation results.
-        """
-        print('pyearthbuffer started export results')
+    def pyearthbuffer_export(self) -> None:
+        """Export the buffer operation results."""
+        print("pyearthbuffer started export results")
         ptimer = pytimer()
         ptimer.start()
-        # Export logic here
+        # Export logic can be hooked here by subclasses or workflows
         ptimer.stop()
-        return
 
-    def tojson(self):
-        """
-        Convert the case object to a JSON string.
+    def tojson(self) -> str:
+        """Convert the case object to a JSON string.
 
         Returns:
-            str: A JSON string representing the case object
+            str: A formatted JSON string representing the case object.
         """
         obj = self.__dict__.copy()
-        sJson = json.dumps(obj,
-                          sort_keys=True,
-                          indent=4,
-                          ensure_ascii=True,
-                          cls=CaseClassEncoder)
-        return sJson
+        return json.dumps(
+            obj,
+            sort_keys=True,
+            indent=4,
+            ensure_ascii=True,
+            cls=CaseClassEncoder,
+        )
 
-    def pyearthbuffer_print(self):
-        """
-        Print the case object.
-        """
+    def pyearthbuffer_print(self) -> None:
+        """Print the case object in JSON format."""
         print(self.tojson())
-        return

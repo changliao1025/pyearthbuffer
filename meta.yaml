@@ -1,5 +1,5 @@
-{% set name = "pyearth" %}
-{% set version = "0.2.4" %}
+{% set name = "pyearthbuffer" %}
+{% set version = "0.1.0" %}
 {% set git_rev = "main" %}
 {% set python_min = "3.9" %}
 
@@ -9,47 +9,41 @@ package:
 
 source:
   git_rev: {{ git_rev }}
-  git_url: https://github.com/changliao1025/pyearth
+  git_url: https://github.com/changliao1025/pyearthbuffer
 
 build:
+  noarch: python
   number: 0
-  script: python -m pip install . -vv --no-build-isolation
-  skip: true  # [win and vc<14]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
-  build:
-    - {{ stdlib("c") }}
-    - {{ compiler('c') }}
   host:
+    - python >={{ python_min }}
     - pip
-    - python
-    - setuptools
-    - numpy
-    - cython >=0.29.0
+    - setuptools >=61.0
   run:
-    - python
-    - {{ pin_compatible('numpy') }}
+    - python >={{ python_min }}
+    - numpy
     - gdal
-    - netcdf4
-    - pandas
+    - matplotlib
+    - cartopy
     - scipy
-    - statsmodels
-    - rtree
     - geographiclib
+    - pyearth
 
 test:
   imports:
-    - pyearth
-    - pyearth.gis.geometry.kernel
-    - pyearth.gis.location.kernel
+    - pyearthbuffer
+    - pyearthbuffer.buffer
+    - pyearthbuffer.utility
   commands:
     - pip check
   requires:
     - pip
 
 about:
-  home: https://github.com/changliao1025/pyearth
-  summary: Python for Earth Science.
+  home: https://github.com/changliao1025/pyearthbuffer
+  summary: Geographic Coordinate System Buffer Operations in Python.
   license: BSD-3-Clause
   license_file: LICENSE.md
 
