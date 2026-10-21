@@ -1,0 +1,18 @@
+name: pyearth-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - numpy
+  - gdal
+  - netcdf4
+  - pandas
+  - scipy
+  - statsmodels
+  - rtree
+  - geographiclib
+  - cython>=0.29.0
+  - pip
+  - pip:
+    - -e .
