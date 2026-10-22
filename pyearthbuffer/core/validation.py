@@ -53,14 +53,10 @@ def validate_coordinates(lon: float, lat: float) -> tuple[float, float]:
         raise TypeError("Coordinates must be numeric.") from exc
 
     if not (-180.0 <= lon_f <= 180.0):
-        raise ValueError(
-            f"Longitude must be in range [-180, 180], got {lon_f}."
-        )
+        raise ValueError(f"Longitude must be in range [-180, 180], got {lon_f}.")
 
     if not (-90.0 <= lat_f <= 90.0):
-        raise ValueError(
-            f"Latitude must be in range [-90, 90], got {lat_f}."
-        )
+        raise ValueError(f"Latitude must be in range [-90, 90], got {lat_f}.")
 
     return lon_f, lat_f
 

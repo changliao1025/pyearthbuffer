@@ -105,7 +105,9 @@ def buffer_file(
 
     n_features = p_in_layer.GetFeatureCount()
     if verbose:
-        logger.info(f"Processing {n_features} features from {s_input} with distance {valid_dist}m.")
+        logger.info(
+            f"Processing {n_features} features from {s_input} with distance {valid_dist}m."
+        )
 
     # Overwrite check
     if os.path.exists(s_output):
@@ -118,7 +120,9 @@ def buffer_file(
                 logger.warning(f"Failed to remove existing file {s_output}: {exc}")
         else:
             p_in_ds = None
-            raise FileExistsError(f"Output file already exists and overwrite=False: {s_output}")
+            raise FileExistsError(
+                f"Output file already exists and overwrite=False: {s_output}"
+            )
 
     # Create output dataset & layer
     p_out_ds = p_driver.CreateDataSource(s_output)
@@ -169,9 +173,15 @@ def buffer_file(
             try:
                 coords = get_geometry_coordinates(geom)
                 if coords is not None and len(coords) > 0:
-                    c_arr = coords[0] if isinstance(coords, list) and isinstance(coords[0], list) else coords
+                    c_arr = (
+                        coords[0]
+                        if isinstance(coords, list) and isinstance(coords[0], list)
+                        else coords
+                    )
                     c_arr = coords if not isinstance(coords, list) else coords[0]
-                    area = calculate_polygon_area(c_arr[:, 0], c_arr[:, 1], iFlag_algorithm=2)
+                    area = calculate_polygon_area(
+                        c_arr[:, 0], c_arr[:, 1], iFlag_algorithm=2
+                    )
                     if area < min_area:
                         p_feat = p_in_layer.GetNextFeature()
                         continue
@@ -217,7 +227,9 @@ def buffer_file(
     p_out_ds = None
 
     if verbose:
-        logger.info(f"Finished buffering. Created {n_buffered} buffer features in {s_output}.")
+        logger.info(
+            f"Finished buffering. Created {n_buffered} buffer features in {s_output}."
+        )
 
     return n_buffered
 

@@ -120,7 +120,9 @@ class TestVectorFileBuffer:
 
     def test_buffer_polygons_file(self, sample_polygons_geojson: Path, tmp_path: Path):
         output_file = tmp_path / "polygons_buffered.geojson"
-        count = buffer_polygon_file(sample_polygons_geojson, output_file, distance=500.0)
+        count = buffer_polygon_file(
+            sample_polygons_geojson, output_file, distance=500.0
+        )
 
         assert count == 1
         assert output_file.exists()
@@ -132,10 +134,14 @@ class TestVectorFileBuffer:
         assert feat.GetField("zone") == "Zone 1"
         ds = None
 
-    def test_buffer_file_with_dissolve(self, sample_points_geojson: Path, tmp_path: Path):
+    def test_buffer_file_with_dissolve(
+        self, sample_points_geojson: Path, tmp_path: Path
+    ):
         output_file = tmp_path / "points_dissolved.geojson"
         # 100km distance ensures point buffers overlap and dissolve into 1 unified polygon
-        count = buffer_file(sample_points_geojson, output_file, distance=100000.0, dissolve=True)
+        count = buffer_file(
+            sample_points_geojson, output_file, distance=100000.0, dissolve=True
+        )
 
         assert count >= 1
         assert output_file.exists()
@@ -149,7 +155,11 @@ class TestVectorFileBuffer:
 
     def test_buffer_file_missing_input_raises_error(self, tmp_path: Path):
         with pytest.raises(FileNotFoundError):
-            buffer_file(tmp_path / "nonexistent.geojson", tmp_path / "out.geojson", distance=100.0)
+            buffer_file(
+                tmp_path / "nonexistent.geojson",
+                tmp_path / "out.geojson",
+                distance=100.0,
+            )
 
     def test_buffer_file_negative_distance_raises_error(
         self, sample_points_geojson: Path, tmp_path: Path

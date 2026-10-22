@@ -76,9 +76,7 @@ class RasterBuffer:
 
         p_driver_tif = gdal.GetDriverByName("GTiff")
         options = ["COMPRESS=DEFLATE", "PREDICTOR=2"]
-        p_ds = p_driver_tif.Create(
-            label_file, n_col, n_row, 1, gdal.GDT_Int16, options
-        )
+        p_ds = p_driver_tif.Create(label_file, n_col, n_row, 1, gdal.GDT_Int16, options)
         p_ds.SetGeoTransform(geotransform)
         p_ds.SetProjection(projection)
         p_band = p_ds.GetRasterBand(1)
@@ -136,7 +134,9 @@ class RasterBuffer:
 
             lon_center = float(np.mean(coords_arr[:, 0]))
             lat_center = float(np.mean(coords_arr[:, 1]))
-            p_polygon = pypolygon(lon_center, lat_center, edges, vertices + [vertices[0]])
+            p_polygon = pypolygon(
+                lon_center, lat_center, edges, vertices + [vertices[0]]
+            )
 
             dummy_geojson = (
                 os.path.join(out_folder, f"temp{part_str}.geojson")

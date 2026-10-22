@@ -6,7 +6,9 @@ import os
 from pyearthbuffer import buffer
 
 # Setup output folders
-data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+data_folder = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "data")
+)
 out_folder = os.path.join(data_folder, "pypolygon")
 os.makedirs(out_folder, exist_ok=True)
 
@@ -27,7 +29,10 @@ feature = {
     "features": [
         {
             "type": "Feature",
-            "properties": {"name": "Protected Zone Buffer", "buffer_m": buffer_distance},
+            "properties": {
+                "name": "Protected Zone Buffer",
+                "buffer_m": buffer_distance,
+            },
             "geometry": buffered_polygon_json,
         }
     ],

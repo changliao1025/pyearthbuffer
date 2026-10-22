@@ -6,7 +6,9 @@ import os
 from pyearthbuffer import buffer, buffer_file
 
 # Setup output folders
-data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+data_folder = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "data")
+)
 out_folder = os.path.join(data_folder, "point")
 os.makedirs(out_folder, exist_ok=True)
 

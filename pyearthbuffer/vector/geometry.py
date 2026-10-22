@@ -20,7 +20,9 @@ from pyearthbuffer.vector.dissolve import (
 logger = logging.getLogger(__name__)
 
 
-def _buffer_point_ogr(geom: ogr.Geometry, distance: float, num_points: int = 60) -> ogr.Geometry:
+def _buffer_point_ogr(
+    geom: ogr.Geometry, distance: float, num_points: int = 60
+) -> ogr.Geometry:
     """Calculate geodesic buffer around an OGR Point geometry."""
     lon = geom.GetX()
     lat = geom.GetY()
@@ -29,11 +31,15 @@ def _buffer_point_ogr(geom: ogr.Geometry, distance: float, num_points: int = 60)
     s_wkt, _ = p_point.calculate_buffer_zone_circle(distance, nPoint=num_points)
     out_geom = ogr.CreateGeometryFromWkt(s_wkt)
     if out_geom is None or out_geom.IsEmpty():
-        raise RuntimeError(f"Failed to create point buffer geometry for ({lon}, {lat}).")
+        raise RuntimeError(
+            f"Failed to create point buffer geometry for ({lon}, {lat})."
+        )
     return out_geom
 
 
-def _buffer_multipoint_ogr(geom: ogr.Geometry, distance: float, num_points: int = 60) -> ogr.Geometry:
+def _buffer_multipoint_ogr(
+    geom: ogr.Geometry, distance: float, num_points: int = 60
+) -> ogr.Geometry:
     """Calculate geodesic buffer around an OGR MultiPoint geometry."""
     n_pts = geom.GetGeometryCount()
     buffered_parts = []
@@ -115,7 +121,7 @@ def _buffer_single_polygon_ogr(geom: ogr.Geometry, distance: float) -> ogr.Geome
     ]
 
     # Filter consecutive duplicate points
-    filtered_points = []
+    filtered_points: list[pypoint] = []
     for pt in a_point:
         if not filtered_points or pt != filtered_points[-1]:
             filtered_points.append(pt)
@@ -222,7 +228,9 @@ def buffer(
         for i in range(ogr_geom.GetGeometryCount()):
             sub = ogr_geom.GetGeometryRef(i)
             if sub and not sub.IsEmpty():
-                sub_buffered = buffer(sub, valid_dist, num_points=valid_n_pts, output_format="ogr")
+                sub_buffered = buffer(
+                    sub, valid_dist, num_points=valid_n_pts, output_format="ogr"
+                )
                 parts.append(sub_buffered)
         res_geom = dissolve_geometries(parts)
         if res_geom is None or res_geom.IsEmpty():
@@ -245,7 +253,9 @@ def buffer_point(
     geom_name = ogr_geom.GetGeometryName().upper()
     if geom_name not in ("POINT", "MULTIPOINT"):
         raise ValueError(f"Expected POINT or MULTIPOINT, got {geom_name}.")
-    return buffer(ogr_geom, distance, num_points=num_points, output_format=output_format)
+    return buffer(
+        ogr_geom, distance, num_points=num_points, output_format=output_format
+    )
 
 
 def buffer_line(

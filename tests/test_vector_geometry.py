@@ -3,12 +3,7 @@
 import pytest
 from osgeo import ogr
 
-from pyearthbuffer import (
-    buffer,
-    buffer_line,
-    buffer_point,
-    buffer_polygon,
-)
+from pyearthbuffer import buffer, buffer_line, buffer_point, buffer_polygon
 
 
 class TestPointBuffer:
@@ -26,7 +21,9 @@ class TestPointBuffer:
         assert result_wkt.startswith("POLYGON")
 
     def test_buffer_point_geojson_output(self):
-        result_json = buffer((-74.006, 40.7128), distance=1000.0, output_format="geojson")
+        result_json = buffer(
+            (-74.006, 40.7128), distance=1000.0, output_format="geojson"
+        )
         assert isinstance(result_json, dict)
         assert result_json["type"] == "Polygon"
         assert len(result_json["coordinates"][0]) >= 30
@@ -74,13 +71,17 @@ class TestPolygonBuffer:
     """Tests for buffering polygon geometries."""
 
     def test_buffer_polygon_from_wkt(self):
-        poly_wkt = "POLYGON ((-74.0 40.7, -74.0 40.8, -73.9 40.8, -73.9 40.7, -74.0 40.7))"
+        poly_wkt = (
+            "POLYGON ((-74.0 40.7, -74.0 40.8, -73.9 40.8, -73.9 40.7, -74.0 40.7))"
+        )
         result_wkt = buffer(poly_wkt, distance=500.0)
         assert isinstance(result_wkt, str)
         assert result_wkt.startswith("POLYGON")
 
     def test_buffer_polygon_specific_function(self):
-        poly_wkt = "POLYGON ((-74.0 40.7, -74.0 40.8, -73.9 40.8, -73.9 40.7, -74.0 40.7))"
+        poly_wkt = (
+            "POLYGON ((-74.0 40.7, -74.0 40.8, -73.9 40.8, -73.9 40.7, -74.0 40.7))"
+        )
         result_wkt = buffer_polygon(poly_wkt, distance=500.0)
         assert isinstance(result_wkt, str)
         assert result_wkt.startswith("POLYGON")

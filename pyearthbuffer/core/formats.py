@@ -46,7 +46,9 @@ def to_ogr_geometry(geom_input: Any) -> ogr.Geometry:
 
     # 2. Coordinate tuple/list: (lon, lat)
     if isinstance(geom_input, (tuple, list)):
-        if len(geom_input) == 2 and all(isinstance(c, (int, float)) for c in geom_input):
+        if len(geom_input) == 2 and all(
+            isinstance(c, (int, float)) for c in geom_input
+        ):
             lon, lat = validate_coordinates(geom_input[0], geom_input[1])
             pt = ogr.Geometry(ogr.wkbPoint)
             pt.AddPoint(lon, lat)

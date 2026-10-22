@@ -34,9 +34,6 @@ from pyearthbuffer.vector import (
     buffer_polygon_file,
 )
 
-# Utility
-from pyearthbuffer.utility.case import pycase
-
 __all__ = [
     # Unified buffer operations
     "buffer",
@@ -55,5 +52,4 @@ __all__ = [
     "pycircle",
     # Utilities
     "pytimer",
-    "pycase",
 ]
