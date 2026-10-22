@@ -1,4 +1,4 @@
-# pyearthbuffer
+# PyEarthBuffer
 
 Geographic Coordinate System (GCS) Buffer Operations in Python.
 
