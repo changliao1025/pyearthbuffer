@@ -1,128 +1,70 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools-scm>=8", "wheel", "Cython>=0.29.0", "numpy>=1.20.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pyearth"
-version = "0.2.4"
-description = "Python for Earth Science."
+name = "pyearthbuffer"
+version = "0.1.0"
+description = "Geographic Coordinate System Buffer Operations in Python"
 readme = "README.md"
-requires-python = ">=3.9"
-license = {text = "BSD-3-Clause"}
 authors = [
     {name = "Chang Liao", email = "changliao.climate@gmail.com"}
 ]
-keywords = ["Earth Science", "GIS", "Geospatial", "Scientific Computing"]
+license = {text = "BSD-3-Clause"}
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Operating System :: OS Independent",
     "Intended Audience :: Science/Research",
-    "Programming Language :: Python",
+    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Topic :: Scientific/Engineering",
-    "Topic :: Scientific/Engineering :: Visualization",
     "Topic :: Scientific/Engineering :: GIS",
 ]
+requires-python = ">=3.9"
 dependencies = [
-    "numpy",
+    "cartopy",
     "gdal",
-    "netCDF4",
-    "pandas",
-    "scipy",
-    "statsmodels",
-    "rtree",
     "geographiclib",
+    "matplotlib",
+    "numpy",
+    "pyearth",
+    "scipy",
 ]
-
-[project.urls]
-Homepage = "https://github.com/changliao1025/pyearth"
-Documentation = "https://pyearth.readthedocs.io"
-Repository = "https://github.com/changliao1025/pyearth"
-"Bug Tracker" = "https://github.com/changliao1025/pyearth/issues"
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "pytest-cov",
     "black",
     "flake8",
+    "isort",
     "mypy",
-    "sphinx",
-    "sphinx-rtd-theme",
-]
-docs = [
-    "breathe",
-    "sphinx",
-    "sphinx-rtd-theme",
-    "myst-parser",
-]
-test = [
-    "pytest>=7.0",
-    "pytest-cov",
-]
-mesh = [
-    "alphashape",
-    "geopandas",
-]
-ocean = [
-    "cartopy",
-]
-all = [
-    "alphashape",
-    "cartopy",
-    "geopandas",
+    "pre-commit",
+    "pytest",
 ]
 
-[tool.setuptools]
-include-package-data = true
+[project.urls]
+Homepage = "https://github.com/changliao1025/pyearthbuffer"
+Documentation = "https://pyearthbuffer.readthedocs.io"
+Repository = "https://github.com/changliao1025/pyearthbuffer"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["pyearth*"]
-exclude = ["tests*", "docs*", "notebooks*"]
-
-[tool.setuptools.package-data]
-pyearth = ["*.pyx", "*.pxd", "*.c"]
+include = ["pyearthbuffer*"]
+exclude = ["data*", "examples*", "rules*", "tests*"]
 
 [tool.black]
-line-length = 100
+line-length = 88
 target-version = ['py39', 'py310', 'py311', 'py312']
 include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
 
-[tool.pytest.ini_options]
-minversion = "7.0"
-addopts = "-ra -q --strict-markers"
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+[tool.isort]
+profile = "black"
+line_length = 88
 
 [tool.mypy]
-python_version = "3.10"
-warn_return_any = false
+python_version = "3.9"
+warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = false
 ignore_missing_imports = true
 explicit_package_bases = true
-mypy_path = "."
-exclude = ["^docs/"]
-
-[tool.cython]
-language_level = 3
+exclude = ['docs/', 'data/']

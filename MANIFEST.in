@@ -4,17 +4,17 @@ include AUTHORS.rst
 include CITATION.cff
 include LICENSE.md
 include setup.py
-include build_backend.py
 include pyproject.toml
-include *.yml
-include *.yaml
+include environment.yml
+include meta.yaml
+include disclaimer.md
 
 # Include documentation
 recursive-include docs *.rst *.py *.txt *.in Makefile *.bat
 prune docs/_build
 
-# Include all Python source files and Cython files
-recursive-include pyearth *.py *.pyx *.pxd *.c
+# Include all Python source files
+recursive-include pyearthbuffer *.py
 
 # Include test files
 recursive-include tests *.py
@@ -37,10 +37,8 @@ global-exclude *~
 exclude .pypirc
 exclude .condarc
 exclude .readthedocs.yml
-exclude bld.bat
-exclude build_backup.sh
-exclude meta.yaml
-exclude disclaimer.md
+exclude .flake8
+exclude .pre-commit-config.yaml
 
 # Exclude data and notebook directories
 prune data

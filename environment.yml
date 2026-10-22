@@ -1,4 +1,4 @@
-name: pyearth-env
+name: pyearthbuffer
 channels:
   - conda-forge
   - defaults
@@ -6,13 +6,11 @@ dependencies:
   - python>=3.9
   - numpy
   - gdal
-  - netcdf4
-  - pandas
+  - matplotlib
+  - cartopy
   - scipy
-  - statsmodels
-  - rtree
   - geographiclib
-  - cython>=0.29.0
+  - pyearth
   - pip
   - pip:
     - -e .

@@ -4,9 +4,8 @@ authors:
   - family-names: Liao
     given-names: Chang
     orcid: "https://orcid.org/0000-0002-7348-8858"
-title: "PyEarth: A lightweight Python package for Earth science"
-version: 0.2.4
-doi: 10.5281/zenodo.6109987
-date-released: 2022-03-18
-url: "https://github.com/changliao1025/pyearth"
-repository-code: "https://github.com/changliao1025/pyearth"
+title: "pyearthbuffer: Geographic Coordinate System Buffer Operations in Python"
+version: 0.1.0
+date-released: 2024-01-01
+url: "https://github.com/changliao1025/pyearthbuffer"
+repository-code: "https://github.com/changliao1025/pyearthbuffer"
