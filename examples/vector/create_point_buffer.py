@@ -3,7 +3,7 @@
 import json
 import os
 
-from pyearthbuffer import buffer, buffer_file
+from pyearthbuffer import gcsbuffer, gcsbuffer_file
 
 # Setup output folders
 data_folder = os.path.abspath(
@@ -17,11 +17,13 @@ point_coords = (-73.935242, 40.730610)  # NYC (lon, lat)
 buffer_radius = 10000.0  # 10 km
 
 # Buffer to WKT
-wkt_buffer = buffer(point_coords, distance=buffer_radius)
+wkt_buffer = gcsbuffer(point_coords, distance=buffer_radius)
 print("Point buffer WKT (first 60 chars):", wkt_buffer[:60])
 
 # Buffer to GeoJSON
-geojson_buffer = buffer(point_coords, distance=buffer_radius, output_format="geojson")
+geojson_buffer = gcsbuffer(
+    point_coords, distance=buffer_radius, output_format="geojson"
+)
 
 # Save to file
 out_geojson_file = os.path.join(out_folder, "point_buffer.geojson")
@@ -42,7 +44,7 @@ print(f"Saved buffered point to: {out_geojson_file}")
 
 # 2. File-based point buffering
 batch_out_file = os.path.join(out_folder, "point_buffer_batch.geojson")
-n_buffered = buffer_file(
+n_buffered = gcsbuffer_file(
     out_geojson_file,
     batch_out_file,
     distance=5000.0,

@@ -178,7 +178,7 @@ def _buffer_multipolygon_ogr(geom: ogr.Geometry, distance: float) -> ogr.Geometr
     return dissolved
 
 
-def buffer(
+def gcsbuffer(
     geometry: Union[str, dict[str, Any], ogr.Geometry, tuple, list],
     distance: float,
     *,
@@ -228,7 +228,7 @@ def buffer(
         for i in range(ogr_geom.GetGeometryCount()):
             sub = ogr_geom.GetGeometryRef(i)
             if sub and not sub.IsEmpty():
-                sub_buffered = buffer(
+                sub_buffered = gcsbuffer(
                     sub, valid_dist, num_points=valid_n_pts, output_format="ogr"
                 )
                 parts.append(sub_buffered)
@@ -241,7 +241,7 @@ def buffer(
     return from_ogr_geometry(res_geom, output_format=output_format)
 
 
-def buffer_point(
+def gcsbuffer_point(
     point: Union[str, dict[str, Any], ogr.Geometry, tuple, list],
     distance: float,
     *,
@@ -253,12 +253,12 @@ def buffer_point(
     geom_name = ogr_geom.GetGeometryName().upper()
     if geom_name not in ("POINT", "MULTIPOINT"):
         raise ValueError(f"Expected POINT or MULTIPOINT, got {geom_name}.")
-    return buffer(
+    return gcsbuffer(
         ogr_geom, distance, num_points=num_points, output_format=output_format
     )
 
 
-def buffer_line(
+def gcsbuffer_line(
     line: Union[str, dict[str, Any], ogr.Geometry, tuple, list],
     distance: float,
     *,
@@ -269,10 +269,10 @@ def buffer_line(
     geom_name = ogr_geom.GetGeometryName().upper()
     if geom_name not in ("LINESTRING", "MULTILINESTRING"):
         raise ValueError(f"Expected LINESTRING or MULTILINESTRING, got {geom_name}.")
-    return buffer(ogr_geom, distance, output_format=output_format)
+    return gcsbuffer(ogr_geom, distance, output_format=output_format)
 
 
-def buffer_polygon(
+def gcsbuffer_polygon(
     polygon: Union[str, dict[str, Any], ogr.Geometry],
     distance: float,
     *,
@@ -283,4 +283,4 @@ def buffer_polygon(
     geom_name = ogr_geom.GetGeometryName().upper()
     if geom_name not in ("POLYGON", "MULTIPOLYGON"):
         raise ValueError(f"Expected POLYGON or MULTIPOLYGON, got {geom_name}.")
-    return buffer(ogr_geom, distance, output_format=output_format)
+    return gcsbuffer(ogr_geom, distance, output_format=output_format)

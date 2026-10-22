@@ -14,11 +14,11 @@ No. Inputs must already be expressed as WGS84 longitude/latitude. File output
 is labeled EPSG:4326, so using projected or other geographic coordinates
 without transforming them first can produce incorrect results.
 
-How do I choose between ``buffer`` and ``buffer_file``?
--------------------------------------------------------
+How do I choose between ``gcsbuffer`` and ``gcsbuffer_file``?
+-------------------------------------------------------------
 
-Use ``buffer`` for an in-memory geometry and ``buffer_file`` to process all
-features in an OGR-supported vector dataset.
+Use ``gcsbuffer`` for an in-memory geometry and ``gcsbuffer_file`` to process
+all features in an OGR-supported vector dataset.
 
 What can I use as an in-memory geometry?
 ----------------------------------------

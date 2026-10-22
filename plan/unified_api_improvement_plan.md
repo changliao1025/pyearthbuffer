@@ -24,13 +24,13 @@
    - **Object-Based (In-Memory Geometries)**: Fast, flexible buffering for individual geometries, WKT strings, GeoJSON dicts/strings, Shapely/OGR geometries, or coordinate sequences.
    - **File-Based (Datasets on Disk)**: Robust, batch-capable processing of vector files (Shapefile, GeoJSON, GeoPackage, etc.), preserving attributes, coordinate systems, and offering dissolve/simplification options.
 2. **Unified & Pythonic Interface**:
-   - A single, intuitive top-level entry point (`buffer` for objects, `buffer_file` for files) with automatic geometry type detection.
-   - Dedicated explicit functions (`buffer_point`, `buffer_line`, `buffer_polygon`) for users who want explicit typing and specialized parameters.
+   - A single, intuitive top-level entry point (`gcsbuffer` for objects, `gcsbuffer_file` for files) with automatic geometry type detection.
+   - Dedicated explicit functions (`gcsbuffer_point`, `gcsbuffer_line`, `gcsbuffer_polygon`) for users who want explicit typing and specialized parameters.
    - Standard keyword arguments: `distance` (in meters), `points` / `resolution`, `dissolve`, `preserve_attributes`.
 3. **Three-Tier Architectural Layering**:
    - **Tier 1 (Foundations & Utilities)**: Coordinate validation, format conversion, OGR/WKT helpers, bounding box math.
    - **Tier 2 (Core Geodesic Engines)**: Geodesic buffer calculations on WGS84 for points, polylines, and polygons.
-   - **Tier 3 (Public Interfaces & Pipelines)**: Unified `buffer` and `buffer_file` APIs, batch executors, export functions.
+   - **Tier 3 (Public Interfaces & Pipelines)**: Unified `gcsbuffer` and `gcsbuffer_file` APIs, batch executors, export functions.
 4. **Isolate & Decouple Raster Operations**:
    - Keep raster operations isolated in an optional/experimental namespace (`pyearthbuffer.raster` or `pyearthbuffer.experimental.raster`) without blocking or complicating vector core development.
 
@@ -40,9 +40,9 @@
 
 ```
 pyearthbuffer/
-├── __init__.py                  # Public exports: buffer, buffer_file, geometry primitives
+├── __init__.py                  # Public exports: gcsbuffer, gcsbuffer_file, geometry primitives
 ├── vector/                      # Vector buffer domain (Core focus)
-│   ├── __init__.py              # Exports: buffer, buffer_file, buffer_point, buffer_line, buffer_polygon
+│   ├── __init__.py              # Exports: gcsbuffer, gcsbuffer_file, gcsbuffer_point, gcsbuffer_line, gcsbuffer_polygon
 │   ├── geometry.py              # Object-based buffer operations & type auto-detection
 │   ├── file.py                  # File-based buffer operations & batch file I/O
 │   └── dissolve.py              # Dissolve, union, and polygon simplification helpers
@@ -63,30 +63,30 @@ pyearthbuffer/
 
 Provides geodesic buffer operations on in-memory geometric representations.
 
-#### 1. Unified Dispatcher: `buffer(geometry, distance, ...)`
+#### 1. Unified Dispatcher: `gcsbuffer(geometry, distance, ...)`
 Automatically detects the geometry type and input format (WKT string, GeoJSON mapping, OGR geometry, or coordinate list).
 
 ```python
-from pyearthbuffer import buffer
+from pyearthbuffer import gcsbuffer
 
 # 1. From WKT string
-buffer_wkt = buffer("POINT (-74.006 40.7128)", distance=1000.0)
+buffer_wkt = gcsbuffer("POINT (-74.006 40.7128)", distance=1000.0)
 
 # 2. From coordinate tuple / list (auto-detected as Point)
-buffer_geom = buffer((-74.006, 40.7128), distance=1000.0, output_format="geojson")
+buffer_geom = gcsbuffer((-74.006, 40.7128), distance=1000.0, output_format="geojson")
 
 # 3. LineString buffering
 line_wkt = "LINESTRING (-74.006 40.7128, -73.990 40.7200)"
-corridor_wkt = buffer(line_wkt, distance=50.0)
+corridor_wkt = gcsbuffer(line_wkt, distance=50.0)
 
 # 4. Polygon buffering
 poly_wkt = "POLYGON ((-74.0 40.7, -74.0 40.8, -73.9 40.8, -73.9 40.7, -74.0 40.7))"
-outer_buffer = buffer(poly_wkt, distance=500.0)
+outer_buffer = gcsbuffer(poly_wkt, distance=500.0)
 ```
 
 **Function Signature:**
 ```python
-def buffer(
+def gcsbuffer(
     geometry: Union[str, dict, ogr.Geometry, tuple, list],
     distance: float,
     *,
@@ -118,9 +118,9 @@ def buffer(
 ```
 
 #### 2. Specialized Geometry Functions:
-- `buffer_point(point, distance, num_points=60, output_format="wkt")`
-- `buffer_line(line, distance, num_points=60, output_format="wkt")`
-- `buffer_polygon(polygon, distance, output_format="wkt")`
+- `gcsbuffer_point(point, distance, num_points=60, output_format="wkt")`
+- `gcsbuffer_line(line, distance, num_points=60, output_format="wkt")`
+- `gcsbuffer_polygon(polygon, distance, output_format="wkt")`
 
 ---
 
@@ -128,14 +128,14 @@ def buffer(
 
 Provides file-to-file batch buffer processing with vector format detection, attribute preservation, and optional dissolve/simplification.
 
-#### 1. Unified Dispatcher: `buffer_file(input_file, output_file, distance, ...)`
+#### 1. Unified Dispatcher: `gcsbuffer_file(input_file, output_file, distance, ...)`
 Buffers all features in a vector file regardless of geometry type (Points, Lines, Polygons, or Multi-geometries).
 
 ```python
-from pyearthbuffer import buffer_file
+from pyearthbuffer import gcsbuffer_file
 
 # Buffer points file (e.g. earthquake epicenters)
-buffer_file(
+gcsbuffer_file(
     input_file="epicenters.geojson",
     output_file="hazard_zones.geojson",
     distance=10000.0,  # 10 km
@@ -143,7 +143,7 @@ buffer_file(
 )
 
 # Buffer roads file with corridor dissolve
-buffer_file(
+gcsbuffer_file(
     input_file="highways.shp",
     output_file="highway_noise_zones.gpkg",
     distance=150.0,
@@ -151,7 +151,7 @@ buffer_file(
 )
 
 # Buffer polygon boundaries with area filter
-buffer_file(
+gcsbuffer_file(
     input_file="watersheds.shp",
     output_file="riparian_buffers.shp",
     distance=500.0,
@@ -163,7 +163,7 @@ buffer_file(
 
 **Function Signature:**
 ```python
-def buffer_file(
+def gcsbuffer_file(
     input_file: Union[str, Path],
     output_file: Union[str, Path],
     distance: float,
@@ -207,9 +207,9 @@ def buffer_file(
 ```
 
 #### 2. Specialized File Functions:
-- `buffer_point_file(input_file, output_file, distance, ...)`
-- `buffer_line_file(input_file, output_file, distance, ...)`
-- `buffer_polygon_file(input_file, output_file, distance, min_area=..., ...)`
+- `gcsbuffer_point_file(input_file, output_file, distance, ...)`
+- `gcsbuffer_line_file(input_file, output_file, distance, ...)`
+- `gcsbuffer_polygon_file(input_file, output_file, distance, min_area=..., ...)`
 
 ---
 
@@ -228,9 +228,9 @@ Given that the package's primary identity and maturity reside in vector operatio
 ## 5. Clean Modern API (No Legacy Compatibility Burden)
 
 Per architecture rules and design direction, legacy shims, alias assignments, and redundant wrappers are completely removed:
-- Old functions (`create_point_buffer_zone`, `create_polyline_buffer_zone`, `create_buffer_zone_polygon_file`) are eliminated in favor of canonical `buffer` and `buffer_file`.
+- Old functions (`create_point_buffer_zone`, `create_polyline_buffer_zone`, `create_buffer_zone_polygon_file`) are eliminated in favor of the canonical `gcsbuffer` API.
 - Raster operations are decoupled from root exports into `pyearthbuffer.raster`.
-- Top-level `pyearthbuffer` exposes only clean, modern interfaces: `buffer`, `buffer_file`, `buffer_point`, `buffer_line`, `buffer_polygon`.
+- Top-level `pyearthbuffer` exposes only clean, uniquely named interfaces: `gcsbuffer`, `gcsbuffer_file`, `gcsbuffer_point`, `gcsbuffer_line`, `gcsbuffer_polygon`.
 
 ---
 
@@ -241,15 +241,15 @@ Per architecture rules and design direction, legacy shims, alias assignments, an
 - Centralize input validation for coordinates, bounding boxes, and positive buffer distances.
 
 ### Phase 2: Object-Based Vector Engine (`pyearthbuffer/vector/geometry.py`)
-- Implement `buffer_point`, `buffer_line`, and `buffer_polygon` for in-memory geometries.
-- Implement top-level dispatcher `buffer(geometry, distance, ...)`.
+- Implement `gcsbuffer_point`, `gcsbuffer_line`, and `gcsbuffer_polygon` for in-memory geometries.
+- Implement top-level dispatcher `gcsbuffer(geometry, distance, ...)`.
 - Support multiple output formats (`wkt`, `geojson`, `ogr`).
 
 ### Phase 3: File-Based Vector Pipeline (`pyearthbuffer/vector/file.py`)
 - Generalize vector file reading and writing across all vector geometry types (Points, Lines, Polygons).
 - Implement feature attribute preservation and schema copying.
 - Implement dissolve/union handling via `_dissolve_buffer_geometries`.
-- Implement `buffer_file` with progress reporting.
+- Implement `gcsbuffer_file` with progress reporting.
 
 ### Phase 4: Integration, Tests & Documentation
 - Expose modern functions in `pyearthbuffer/__init__.py`.

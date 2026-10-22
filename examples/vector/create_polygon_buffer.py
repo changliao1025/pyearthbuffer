@@ -3,7 +3,7 @@
 import json
 import os
 
-from pyearthbuffer import buffer
+from pyearthbuffer import gcsbuffer
 
 # Setup output folders
 data_folder = os.path.abspath(
@@ -19,7 +19,7 @@ polygon_wkt = (
 buffer_distance = 50000.0  # 50 km buffer
 
 # Buffer polygon to GeoJSON
-buffered_polygon_json = buffer(
+buffered_polygon_json = gcsbuffer(
     polygon_wkt, distance=buffer_distance, output_format="geojson"
 )
 

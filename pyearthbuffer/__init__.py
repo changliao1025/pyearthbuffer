@@ -6,9 +6,9 @@ using geodesic calculations on the WGS84 ellipsoid.
 Example:
     >>> import pyearthbuffer as peb
     >>> # Buffer an in-memory point
-    >>> wkt_buf = peb.buffer("POINT (-74.006 40.7128)", distance=1000.0)
+    >>> wkt_buf = peb.gcsbuffer("POINT (-74.006 40.7128)", distance=1000.0)
     >>> # Buffer a vector dataset file
-    >>> peb.buffer_file("points.geojson", "points_buffered.geojson", distance=500.0)
+    >>> peb.gcsbuffer_file("points.geojson", "points_buffered.geojson", distance=500.0)
 """
 
 __version__ = "0.2.0"
@@ -24,26 +24,26 @@ from pyearth.toolbox.mesh.polyline import pypolyline
 
 # Vector buffer operations
 from pyearthbuffer.vector import (
-    buffer,
-    buffer_file,
-    buffer_line,
-    buffer_line_file,
-    buffer_point,
-    buffer_point_file,
-    buffer_polygon,
-    buffer_polygon_file,
+    gcsbuffer,
+    gcsbuffer_file,
+    gcsbuffer_line,
+    gcsbuffer_line_file,
+    gcsbuffer_point,
+    gcsbuffer_point_file,
+    gcsbuffer_polygon,
+    gcsbuffer_polygon_file,
 )
 
 __all__ = [
     # Unified buffer operations
-    "buffer",
-    "buffer_file",
-    "buffer_point",
-    "buffer_line",
-    "buffer_polygon",
-    "buffer_point_file",
-    "buffer_line_file",
-    "buffer_polygon_file",
+    "gcsbuffer",
+    "gcsbuffer_file",
+    "gcsbuffer_point",
+    "gcsbuffer_line",
+    "gcsbuffer_polygon",
+    "gcsbuffer_point_file",
+    "gcsbuffer_line_file",
+    "gcsbuffer_polygon_file",
     # Geometry primitives
     "pypoint",
     "pyline",

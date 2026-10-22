@@ -16,12 +16,12 @@ from pyearthbuffer.vector.dissolve import (
     dissolve_geometries,
     split_multipolygon_to_polygons,
 )
-from pyearthbuffer.vector.geometry import buffer
+from pyearthbuffer.vector.geometry import gcsbuffer
 
 logger = logging.getLogger(__name__)
 
 
-def buffer_file(
+def gcsbuffer_file(
     input_file: Union[str, Path],
     output_file: Union[str, Path],
     distance: float,
@@ -189,7 +189,7 @@ def buffer_file(
                 logger.debug(f"Failed to calculate area for feature {feat_idx}: {exc}")
 
         try:
-            buf_geom = buffer(geom, valid_dist, output_format="ogr")
+            buf_geom = gcsbuffer(geom, valid_dist, output_format="ogr")
         except Exception as exc:
             logger.warning(f"Failed to buffer feature {feat_idx} ({geom_name}): {exc}")
             p_feat = p_in_layer.GetNextFeature()
@@ -234,31 +234,31 @@ def buffer_file(
     return n_buffered
 
 
-def buffer_point_file(
+def gcsbuffer_point_file(
     input_file: Union[str, Path],
     output_file: Union[str, Path],
     distance: float,
     **kwargs,
 ) -> int:
     """Create geodesic buffer zones around points in a vector file."""
-    return buffer_file(input_file, output_file, distance, **kwargs)
+    return gcsbuffer_file(input_file, output_file, distance, **kwargs)
 
 
-def buffer_line_file(
+def gcsbuffer_line_file(
     input_file: Union[str, Path],
     output_file: Union[str, Path],
     distance: float,
     **kwargs,
 ) -> int:
     """Create geodesic buffer corridors around lines in a vector file."""
-    return buffer_file(input_file, output_file, distance, **kwargs)
+    return gcsbuffer_file(input_file, output_file, distance, **kwargs)
 
 
-def buffer_polygon_file(
+def gcsbuffer_polygon_file(
     input_file: Union[str, Path],
     output_file: Union[str, Path],
     distance: float,
     **kwargs,
 ) -> int:
     """Create geodesic buffer zones around polygons in a vector file."""
-    return buffer_file(input_file, output_file, distance, **kwargs)
+    return gcsbuffer_file(input_file, output_file, distance, **kwargs)

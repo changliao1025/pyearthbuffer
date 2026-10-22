@@ -2,8 +2,8 @@ Getting Started
 ===============
 
 PyEarthBuffer creates geodesic buffer zones for vector data using distances in
-meters on the WGS84 ellipsoid. Its main interfaces are ``buffer`` for
-in-memory geometries and ``buffer_file`` for file-to-file processing.
+meters on the WGS84 ellipsoid. Its main interfaces are ``gcsbuffer`` for
+in-memory geometries and ``gcsbuffer_file`` for file-to-file processing.
 
 Installation
 ============
@@ -44,7 +44,7 @@ Quickstart: Object-Based Buffering
 ==================================
 
 Pass a WKT geometry, GeoJSON geometry mapping, OGR geometry, or a point
-coordinate pair ``(longitude, latitude)`` to ``buffer``. The result defaults
+coordinate pair ``(longitude, latitude)`` to ``gcsbuffer``. The result defaults
 to WKT; request GeoJSON or an OGR geometry with ``output_format``.
 
 .. code-block:: python
@@ -52,16 +52,16 @@ to WKT; request GeoJSON or an OGR geometry with ``output_format``.
     import pyearthbuffer as peb
 
     # Point coordinates are longitude, latitude; distance is in meters.
-    point_buffer = peb.buffer((-74.006, 40.7128), distance=1000)
+    point_buffer = peb.gcsbuffer((-74.006, 40.7128), distance=1000)
 
     line = "LINESTRING (-74.006 40.7128, -73.990 40.7200)"
-    corridor = peb.buffer(line, distance=100, output_format="geojson")
+    corridor = peb.gcsbuffer(line, distance=100, output_format="geojson")
 
     polygon = (
         "POLYGON ((-74.0 40.7, -74.0 40.8, -73.9 40.8, "
         "-73.9 40.7, -74.0 40.7))"
     )
-    buffered_polygon = peb.buffer(polygon, distance=500)
+    buffered_polygon = peb.gcsbuffer(polygon, distance=500)
 
 Quickstart: File-Based Buffering
 ================================
@@ -70,7 +70,7 @@ Quickstart: File-Based Buffering
 
     import pyearthbuffer as peb
 
-    written = peb.buffer_file(
+    written = peb.gcsbuffer_file(
         "input_roads.geojson",
         "output_corridors.gpkg",
         distance=100,

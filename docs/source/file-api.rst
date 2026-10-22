@@ -1,11 +1,11 @@
 File-Based Vector API
 =====================
 
-Use ``pyearthbuffer.buffer_file`` to buffer every supported feature in an OGR
+Use ``pyearthbuffer.gcsbuffer_file`` to buffer every supported feature in an OGR
 vector dataset and write the resulting polygons to another vector dataset.
 The function returns the number of output features written.
 
-.. function:: buffer_file(input_file, output_file, distance, *, dissolve=False, min_area=None, preserve_attributes=True, output_driver=None, overwrite=True, verbose=False)
+.. function:: gcsbuffer_file(input_file, output_file, distance, *, dissolve=False, min_area=None, preserve_attributes=True, output_driver=None, overwrite=True, verbose=False)
 
    Batch-buffer an OGR-supported vector dataset with geodesic distances on WGS84.
 
@@ -28,9 +28,9 @@ Example
 
 .. code-block:: python
 
-    from pyearthbuffer import buffer_file
+    from pyearthbuffer import gcsbuffer_file
 
-    count = buffer_file(
+    count = gcsbuffer_file(
         input_file="roads.geojson",
         output_file="road_buffers.gpkg",
         distance=100,
@@ -42,10 +42,10 @@ Example
 Convenience Functions
 ---------------------
 
-The public API also includes ``buffer_point_file``, ``buffer_line_file``, and
-``buffer_polygon_file``. These delegate to ``buffer_file`` with the same
+The public API also includes ``gcsbuffer_point_file``, ``gcsbuffer_line_file``, and
+``gcsbuffer_polygon_file``. These delegate to ``gcsbuffer_file`` with the same
 options; they do not currently validate that every feature matches the helper
-name. Use ``buffer_file`` for mixed-geometry datasets.
+name. Use ``gcsbuffer_file`` for mixed-geometry datasets.
 
 Important Limitations
 ---------------------

@@ -7,15 +7,15 @@ the same geometry dispatcher.
 ## Public workflow
 
 ```text
-buffer(geometry, distance)
+gcsbuffer(geometry, distance)
     -> normalize geometry input
     -> dispatch on OGR geometry type
     -> calculate geodesic buffer using pyearth
     -> format as WKT, GeoJSON, or OGR geometry
 
-buffer_file(input_file, output_file, distance)
+gcsbuffer_file(input_file, output_file, distance)
     -> read features with OGR
-    -> call buffer(geometry, distance) for each feature
+    -> call gcsbuffer(geometry, distance) for each feature
     -> optionally dissolve results
     -> write output geometry and attributes with OGR
 ```
@@ -23,7 +23,7 @@ buffer_file(input_file, output_file, distance)
 ## Package layers
 
 * `pyearthbuffer.core` provides input validation and geometry format conversion.
-* `pyearthbuffer.vector.geometry` provides in-memory buffer dispatch.
+* `pyearthbuffer.vector.geometry` provides in-memory `gcsbuffer` dispatch.
 * `pyearthbuffer.vector.file` provides batch file reading, buffering, and output.
 * `pyearthbuffer.vector.dissolve` provides union and polygon decomposition
   helpers.
