@@ -3,7 +3,7 @@
 import json
 import os
 
-from pyearthbuffer import buffer
+from pyearthbuffer import gcsbuffer
 
 # Setup output folders
 data_folder = os.path.abspath(
@@ -17,7 +17,9 @@ polyline_wkt = "LINESTRING (-73.0 40.0, -73.0 41.0, -72.0 41.0)"
 buffer_distance = 1000.0  # 1 km corridor half-width
 
 # Buffer polyline
-corridor_json = buffer(polyline_wkt, distance=buffer_distance, output_format="geojson")
+corridor_json = gcsbuffer(
+    polyline_wkt, distance=buffer_distance, output_format="geojson"
+)
 
 out_file = os.path.join(out_folder, "polyline_buffer.geojson")
 feature = {

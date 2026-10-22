@@ -1,10 +1,10 @@
 Object-Based Geometry API
 =========================
 
-The object API is centered on ``pyearthbuffer.buffer``. It detects the OGR
+The object API is centered on ``pyearthbuffer.gcsbuffer``. It detects the OGR
 geometry type and returns a polygonal buffer as WKT by default.
 
-.. function:: buffer(geometry, distance, *, num_points=60, output_format="wkt")
+.. function:: gcsbuffer(geometry, distance, *, num_points=60, output_format="wkt")
 
    Calculate a geodesic buffer on WGS84.
 
@@ -29,13 +29,13 @@ Examples
 
 .. code-block:: python
 
-    from pyearthbuffer import buffer
+    from pyearthbuffer import gcsbuffer
 
     # Returns WKT by default.
-    result_wkt = buffer("POINT (-74.006 40.7128)", distance=1000)
+    result_wkt = gcsbuffer("POINT (-74.006 40.7128)", distance=1000)
 
     # Return GeoJSON geometry, not a Feature or FeatureCollection.
-    result_geojson = buffer(
+    result_geojson = gcsbuffer(
         "LINESTRING (-74.006 40.7128, -73.990 40.7200)",
         distance=50,
         output_format="geojson",
@@ -46,12 +46,12 @@ Convenience Functions
 
 The package also exports geometry-specific helpers:
 
-* ``buffer_point(point, distance, *, num_points=60, output_format="wkt")``
-* ``buffer_line(line, distance, *, output_format="wkt")``
-* ``buffer_polygon(polygon, distance, *, output_format="wkt")``
+* ``gcsbuffer_point(point, distance, *, num_points=60, output_format="wkt")``
+* ``gcsbuffer_line(line, distance, *, output_format="wkt")``
+* ``gcsbuffer_polygon(polygon, distance, *, output_format="wkt")``
 
 Each helper checks that the input is of the expected OGR geometry family, then
-uses the same geodesic buffering implementation as ``buffer``.
+uses the same geodesic buffering implementation as ``gcsbuffer``.
 
 Input and Coordinate Notes
 --------------------------
