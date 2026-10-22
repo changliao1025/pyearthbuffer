@@ -39,12 +39,51 @@ pip install -e .
 
 `pyearthbuffer` provides geodesic buffer operations on the WGS84 ellipsoid:
 
-1. **Vector-based buffer calculations**:
-   - Point buffers (`create_point_buffer_zone` or `pypoint.calculate_buffer_zone`)
-   - Line and Polyline buffers (`create_polyline_buffer_zone` or `pypolyline.calculate_buffer_zone_polygon`)
-   - Polygon buffers (`create_buffer_zone_polygon_file` or `pypolygon.calculate_buffer_zone_polygon`)
-2. **Raster-based buffer calculations**:
-   - Binary mask buffer zone calculation (`RasterBuffer` / `gcstiff.calculate_binary_mask_buffer_zone`)
+1. **Object-based vector buffer (`buffer`)**:
+   - Geodesic buffers for Points, LineStrings, Polygons, and Multi-geometries.
+   - Accepts WKT strings, GeoJSON mappings, OGR geometries, or coordinate sequences.
+   - Formats output as WKT, GeoJSON, or OGR geometry objects.
+   - Explicit helpers: `buffer_point`, `buffer_line`, `buffer_polygon`.
+
+2. **File-based vector batch buffer (`buffer_file`)**:
+   - Batch-processes GIS vector files (Shapefile, GeoJSON, GeoPackage, etc.).
+   - Preserves feature attribute tables and schema.
+   - Supports dissolve/union (`dissolve=True`) and polygon area filtering (`min_area`).
+   - Explicit helpers: `buffer_point_file`, `buffer_line_file`, `buffer_polygon_file`.
+
+## Quick Start
+
+### 1. In-Memory Geometry Buffering
+
+```python
+import pyearthbuffer as peb
+
+# Buffer a point (lon, lat) by 1,000 meters
+point_wkt = peb.buffer((-74.006, 40.7128), distance=1000.0)
+
+# Buffer a line corridor to GeoJSON
+line_wkt = "LINESTRING (-74.006 40.7128, -73.990 40.7200)"
+corridor = peb.buffer(line_wkt, distance=50.0, output_format="geojson")
+
+# Buffer a polygon
+poly_wkt = "POLYGON ((-74.0 40.7, -74.0 40.8, -73.9 40.8, -73.9 40.7, -74.0 40.7))"
+poly_buffered = peb.buffer(poly_wkt, distance=500.0)
+```
+
+### 2. Batch File Buffering
+
+```python
+import pyearthbuffer as peb
+
+# Buffer an entire vector dataset file
+peb.buffer_file(
+    input_file="input_roads.geojson",
+    output_file="output_corridors.shp",
+    distance=100.0,
+    dissolve=True,  # Merge overlapping buffer zones
+    preserve_attributes=True,
+)
+```
 
 ## Acknowledgment
 

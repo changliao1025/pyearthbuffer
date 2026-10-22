@@ -1,49 +1,34 @@
+"""Example: Creating multi-segment polyline buffer corridors using pyearthbuffer."""
+
+import json
 import os
 
-from pyearthbuffer import pyline, pypoint, pypolyline
+from pyearthbuffer import buffer
 
-sFolder_data = os.path.join(os.path.dirname(__file__), "..", "..", "data")
-# convert to absolute path
-sFolder_data = os.path.abspath(sFolder_data)
-print(sFolder_data)
+# Setup output folders
+data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+out_folder = os.path.join(data_folder, "pypolyline")
+os.makedirs(out_folder, exist_ok=True)
 
-sFolder_out = os.path.join(sFolder_data, "pypoint")
-os.makedirs(sFolder_out, exist_ok=True)
+# Define polyline in WKT
+polyline_wkt = "LINESTRING (-73.0 40.0, -73.0 41.0, -72.0 41.0)"
+buffer_distance = 1000.0  # 1 km corridor half-width
 
+# Buffer polyline
+corridor_json = buffer(polyline_wkt, distance=buffer_distance, output_format="geojson")
 
-point0 = dict()
-point_lon = -73
-point_lat = 40.0
-point0["dLongitude_degree"] = point_lon
-point0["dLatitude_degree"] = point_lat
-pPoint0 = pypoint(point0)
+out_file = os.path.join(out_folder, "polyline_buffer.geojson")
+feature = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {"name": "Highway Route", "corridor_half_width_m": buffer_distance},
+            "geometry": corridor_json,
+        }
+    ],
+}
+with open(out_file, "w") as f:
+    json.dump(feature, f, indent=2)
 
-
-point_lon = -73
-point_lat = 41
-point1 = dict()
-point1["dLongitude_degree"] = point_lon
-point1["dLatitude_degree"] = point_lat
-pPoint1 = pypoint(point1)
-
-point_lon = -72
-point_lat = 41
-point2 = dict()
-point2["dLongitude_degree"] = point_lon
-point2["dLatitude_degree"] = point_lat
-pPoint2 = pypoint(point2)
-
-pLine0 = pyline(pPoint0, pPoint1)
-pLine1 = pyline(pPoint1, pPoint2)
-
-aEdge = list()
-aEdge.append(pLine0)
-aEdge.append(pLine1)
-pPolyline = pypolyline(aEdge)
-
-
-sFilename_out = os.path.join(sFolder_out, "polyline_buffer.geojson")
-
-sWkt_buffer_polygon, aPoint_out, aCircle_out = pPolyline.calculate_buffer_zone_polygon(
-    1000, sFilename_out=sFilename_out, sFolder_out=sFolder_out
-)
+print(f"Saved buffered polyline corridor to: {out_file}")
