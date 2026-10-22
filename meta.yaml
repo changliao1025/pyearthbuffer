@@ -23,13 +23,10 @@ requirements:
     - setuptools >=61.0
   run:
     - python >={{ python_min }}
-    - numpy
     - gdal
-    - matplotlib
-    - cartopy
-    - scipy
-    - geographiclib
+    - numpy
     - pyearth
+    - scipy
 
 test:
   imports:

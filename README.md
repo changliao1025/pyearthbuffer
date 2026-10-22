@@ -7,15 +7,12 @@ You can also support it by [buying me a coffee](https://www.buymeacoffee.com/cha
 
 ## Dependencies
 
-`pyearthbuffer` depends on the following packages:
+`pyearthbuffer` directly depends on the following packages:
 
-1. `numpy`
-2. `gdal`
-3. `scipy`
-4. `geographiclib`
-5. `matplotlib`
-6. `cartopy`
-7. `pyearth`
+1. `gdal`
+2. `numpy`
+3. `pyearth`
+4. `scipy`
 
 ## Documentation
 

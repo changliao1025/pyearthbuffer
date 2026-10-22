@@ -18,7 +18,7 @@ Using Conda (Recommended)
 
     conda create -n earthbuffer python=3.12 -c conda-forge
     conda activate earthbuffer
-    conda install -c conda-forge gdal numpy scipy geographiclib
+    conda install -c conda-forge gdal numpy scipy
     pip install pyearth pyearthbuffer
 
 Using pip

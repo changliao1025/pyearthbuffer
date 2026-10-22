@@ -41,9 +41,6 @@ autodoc_mock_imports = [
     "pyearth",
     "numpy",
     "scipy",
-    "geographiclib",
-    "cartopy",
-    "matplotlib",
 ]
 
 intersphinx_mapping = {
