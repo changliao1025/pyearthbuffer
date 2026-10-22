@@ -34,7 +34,8 @@ requirements:
 test:
   imports:
     - pyearthbuffer
-    - pyearthbuffer.buffer
+    - pyearthbuffer.vector
+    - pyearthbuffer.raster
     - pyearthbuffer.utility
   commands:
     - pip check
