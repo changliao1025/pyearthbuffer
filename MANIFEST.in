@@ -10,7 +10,7 @@ include meta.yaml
 include disclaimer.md
 
 # Include documentation
-recursive-include docs *.rst *.py *.txt *.in Makefile *.bat
+recursive-include docs *.rst *.md *.py *.txt *.in Makefile *.bat
 prune docs/_build
 
 # Include all Python source files
