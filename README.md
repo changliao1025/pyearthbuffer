@@ -1,5 +1,11 @@
 # PyEarthBuffer
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24167618.svg)](https://doi.org/10.5281/zenodo.24167618)
+[![License](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+[![PyPI version](https://badge.fury.io/py/pyearthhbuffer.svg)](https://badge.fury.io/py/pyearthhbuffer)
+[![PyPI Downloads](https://static.pepy.tech/badge/pyearthhbuffer)](https://pepy.tech/project/pyearthhbuffer)
+
 Geographic Coordinate System (GCS) Buffer Operations in Python.
 
 If you find this package useful, please cite it in your work.
