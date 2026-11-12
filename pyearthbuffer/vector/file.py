@@ -22,14 +22,14 @@ logger = logging.getLogger(__name__)
 
 
 def gcsbuffer_file(
-    input_file: Union[str, Path],
-    output_file: Union[str, Path],
+    input_file: str | Path,
+    output_file: str | Path,
     distance: float,
     *,
     dissolve: bool = False,
-    min_area: Optional[float] = None,
+    min_area: float | None = None,
     preserve_attributes: bool = True,
-    output_driver: Optional[str] = None,
+    output_driver: str | None = None,
     overwrite: bool = True,
     verbose: bool = False,
 ) -> int:
@@ -235,8 +235,8 @@ def gcsbuffer_file(
 
 
 def gcsbuffer_point_file(
-    input_file: Union[str, Path],
-    output_file: Union[str, Path],
+    input_file: str | Path,
+    output_file: str | Path,
     distance: float,
     **kwargs,
 ) -> int:
@@ -245,8 +245,8 @@ def gcsbuffer_point_file(
 
 
 def gcsbuffer_line_file(
-    input_file: Union[str, Path],
-    output_file: Union[str, Path],
+    input_file: str | Path,
+    output_file: str | Path,
     distance: float,
     **kwargs,
 ) -> int:
@@ -255,8 +255,8 @@ def gcsbuffer_line_file(
 
 
 def gcsbuffer_polygon_file(
-    input_file: Union[str, Path],
-    output_file: Union[str, Path],
+    input_file: str | Path,
+    output_file: str | Path,
     distance: float,
     **kwargs,
 ) -> int:

@@ -10,7 +10,7 @@ from pyearth.gis.location.get_geometry_coordinates import get_geometry_coordinat
 logger = logging.getLogger(__name__)
 
 
-def extract_outer_ring_polygon(geometry: ogr.Geometry) -> Optional[ogr.Geometry]:
+def extract_outer_ring_polygon(geometry: ogr.Geometry) -> ogr.Geometry | None:
     """Return a polygon built from the exterior ring of the input geometry.
 
     Args:
@@ -53,7 +53,7 @@ def extract_outer_ring_polygon(geometry: ogr.Geometry) -> Optional[ogr.Geometry]
     return outer_polygon
 
 
-def dissolve_geometries(geometries: list[ogr.Geometry]) -> Optional[ogr.Geometry]:
+def dissolve_geometries(geometries: list[ogr.Geometry]) -> ogr.Geometry | None:
     """Dissolve (union) a collection of geometries into a unified geometry.
 
     Args:

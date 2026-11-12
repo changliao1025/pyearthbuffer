@@ -1,7 +1,7 @@
 {% set name = "pyearthbuffer" %}
 {% set version = "0.1.0" %}
 {% set git_rev = "main" %}
-{% set python_min = "3.9" %}
+{% set python_min = "3.11" %}
 
 package:
   name: {{ name|lower }}
@@ -25,7 +25,7 @@ requirements:
     - python >={{ python_min }}
     - gdal
     - numpy
-    - pyearth
+    - pyearth >=0.2.5
     - scipy
 
 test:
