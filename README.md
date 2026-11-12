@@ -3,8 +3,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24167618.svg)](https://doi.org/10.5281/zenodo.24167618)
 [![License](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-[![PyPI version](https://badge.fury.io/py/pyearthhbuffer.svg)](https://badge.fury.io/py/pyearthhbuffer)
-[![PyPI Downloads](https://static.pepy.tech/badge/pyearthhbuffer)](https://pepy.tech/project/pyearthhbuffer)
+[![PyPI version](https://badge.fury.io/py/pyearthbuffer.svg)](https://badge.fury.io/py/pyearthbuffer)
+[![PyPI Downloads](https://static.pepy.tech/badge/pyearthbuffer)](https://pepy.tech/project/pyearthbuffer)
 
 Geographic Coordinate System (GCS) Buffer Operations in Python.
 
