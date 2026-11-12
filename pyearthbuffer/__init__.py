@@ -11,7 +11,7 @@ Example:
     >>> peb.gcsbuffer_file("points.geojson", "points_buffered.geojson", distance=500.0)
 """
 
-__version__ = "0.2.0"
+__version__ = "0.1.0"
 __author__ = "Chang Liao"
 
 # Core geometry classes from pyearth
