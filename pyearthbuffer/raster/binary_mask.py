@@ -34,7 +34,7 @@ class RasterBuffer:
         self,
         buffer_radius: float,
         output_file: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Calculate buffer zone for binary mask raster.
 
         Args:

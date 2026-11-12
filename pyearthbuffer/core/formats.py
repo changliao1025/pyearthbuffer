@@ -99,7 +99,7 @@ def to_ogr_geometry(geom_input: Any) -> ogr.Geometry:
 
 def from_ogr_geometry(
     ogr_geom: ogr.Geometry, output_format: str = "wkt"
-) -> Union[str, dict[str, Any], ogr.Geometry]:
+) -> str | dict[str, Any] | ogr.Geometry:
     """Format an OGR Geometry into the requested output format.
 
     Args:

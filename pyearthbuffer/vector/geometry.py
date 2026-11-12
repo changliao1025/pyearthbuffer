@@ -179,12 +179,12 @@ def _buffer_multipolygon_ogr(geom: ogr.Geometry, distance: float) -> ogr.Geometr
 
 
 def gcsbuffer(
-    geometry: Union[str, dict[str, Any], ogr.Geometry, tuple, list],
+    geometry: str | dict[str, Any] | ogr.Geometry | tuple | list,
     distance: float,
     *,
     num_points: int = 60,
     output_format: str = "wkt",
-) -> Union[str, dict[str, Any], ogr.Geometry]:
+) -> str | dict[str, Any] | ogr.Geometry:
     """Calculate a geodesic buffer zone around a geometric feature on WGS84.
 
     Automatically identifies the geometry type (Point, MultiPoint, LineString,
@@ -242,12 +242,12 @@ def gcsbuffer(
 
 
 def gcsbuffer_point(
-    point: Union[str, dict[str, Any], ogr.Geometry, tuple, list],
+    point: str | dict[str, Any] | ogr.Geometry | tuple | list,
     distance: float,
     *,
     num_points: int = 60,
     output_format: str = "wkt",
-) -> Union[str, dict[str, Any], ogr.Geometry]:
+) -> str | dict[str, Any] | ogr.Geometry:
     """Calculate a geodesic buffer zone around a point on WGS84."""
     ogr_geom = to_ogr_geometry(point)
     geom_name = ogr_geom.GetGeometryName().upper()
@@ -259,11 +259,11 @@ def gcsbuffer_point(
 
 
 def gcsbuffer_line(
-    line: Union[str, dict[str, Any], ogr.Geometry, tuple, list],
+    line: str | dict[str, Any] | ogr.Geometry | tuple | list,
     distance: float,
     *,
     output_format: str = "wkt",
-) -> Union[str, dict[str, Any], ogr.Geometry]:
+) -> str | dict[str, Any] | ogr.Geometry:
     """Calculate a geodesic buffer corridor around a line on WGS84."""
     ogr_geom = to_ogr_geometry(line)
     geom_name = ogr_geom.GetGeometryName().upper()
@@ -273,11 +273,11 @@ def gcsbuffer_line(
 
 
 def gcsbuffer_polygon(
-    polygon: Union[str, dict[str, Any], ogr.Geometry],
+    polygon: str | dict[str, Any] | ogr.Geometry,
     distance: float,
     *,
     output_format: str = "wkt",
-) -> Union[str, dict[str, Any], ogr.Geometry]:
+) -> str | dict[str, Any] | ogr.Geometry:
     """Calculate a geodesic buffer zone around a polygon on WGS84."""
     ogr_geom = to_ogr_geometry(polygon)
     geom_name = ogr_geom.GetGeometryName().upper()
