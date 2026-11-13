@@ -6,6 +6,9 @@
 [![PyPI version](https://badge.fury.io/py/pyearthbuffer.svg)](https://badge.fury.io/py/pyearthbuffer)
 [![PyPI Downloads](https://static.pepy.tech/badge/pyearthbuffer)](https://pepy.tech/project/pyearthbuffer)
 
+[![Conda Version](https://img.shields.io/conda/v/conda-forge/pyearthbuffer.svg)](https://anaconda.org/conda-forge/pyearthbuffer)
+[![Conda Downloads](https://anaconda.org/conda-forge/pyearthbuffer/badges/downloads.svg)](https://anaconda.org/conda-forge/pyearthbuffer)
+
 Geographic Coordinate System (GCS) Buffer Operations in Python.
 
 If you find this package useful, please cite it in your work.
